@@ -4,14 +4,12 @@
  * It is extraordinarily rare that you will ever need to edit this file.
  */
 buildscript {
-    ext.checkstyle_version = '8.18'
-
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.1'
+        classpath 'com.android.tools.build:gradle:4.0.1'
     }
 }
 
