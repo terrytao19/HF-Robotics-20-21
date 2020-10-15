@@ -1,4 +1,4 @@
-A.L.I.E.D 20-21 Ultimate Goal
+A.L.I.D.E 20-21 Ultimate Goal
 
 Please clone, not download zip to your local computer with android studio and push changes often
 
