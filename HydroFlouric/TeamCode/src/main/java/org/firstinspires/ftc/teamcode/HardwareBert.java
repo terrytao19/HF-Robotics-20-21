@@ -49,8 +49,8 @@ public class HardwareBert
     public DcMotor  backleft    = null;
     public DcMotor  backRight   = null;
     public DcMotor  wobbleArm   = null;
-    public DcMotor  intake1     = null;
-    public DcMotor  intake2     = null;
+    public DcMotor  intake      = null;
+    public DcMotor  shooter     = null;
 
 
     //  public Servo    leftClaw    = null;
