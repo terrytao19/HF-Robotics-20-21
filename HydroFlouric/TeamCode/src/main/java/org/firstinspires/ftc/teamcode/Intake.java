@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(name= "BertTeleop", group="Bert")
 
 //@override
-public class BertTeleop extends OpMode {
+public class Intake extends OpMode {
     DcMotor leftDrive;
     DcMotor rightDrive;
 
@@ -23,7 +23,6 @@ public class BertTeleop extends OpMode {
         frontRight = hwMap.dcMotor.get("frontRight");
         backRight = hwMap.dcMotor.get("backRight");
 
-        leftDrivePower = gamepad1.left_stick_y;
         rightDrivePower = gamepad1.right_stick_x;
 
 
