@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(name= "BertTeleop", group="Bert")
 
 //@override
-public class Intake extends OpMode {
+public class BertTeleop extends OpMode {
     DcMotor leftDrive;
     DcMotor rightDrive;
 
