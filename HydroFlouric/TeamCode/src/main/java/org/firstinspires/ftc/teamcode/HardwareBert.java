@@ -27,12 +27,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.acmerobotics.dashboard.FtcDashboard;
+
+
+// Hardware for the robot
 
 /**
  * This is NOT an opmode.
@@ -61,18 +64,23 @@ public class HardwareBert
     //public static final double ARM_DOWN_POWER  = -0.45 ;
 
     /* local OpMode members. */
-    HardwareMap hwMap           =  null;
+    HardwareMap hwMap =  null;
     private ElapsedTime period  = new ElapsedTime();
 
     /* Constructor */
     public HardwareBert(){
 
     }
+public static final double WHEEL_DIAMETER_INCHES = 3; //Used for circumference and PID
+public static final double COUNTS_PER_MOTOR_REV = 8192; // Through bore encoder
+public static final double DRIVE_GEAR_REDUCTION = 1.387755102;
+public static final double COUNTSP_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * Math.PI);
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap) {
         // Save reference to Hardware map
         hwMap = ahwMap;
+
 
         // Define and Initialize Motors
         frontLeft  = hwMap.get(DcMotor.class, "front_left");  //make sure motors are named this in phone

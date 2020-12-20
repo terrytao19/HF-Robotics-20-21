@@ -3,7 +3,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Teleop;
-import com.quhttps://docs.google.com/presentation/d/1IsPbXQ_Xplc64lsegg5QT01OC67hG_Yo8zllR_-8ELo/edit#slide=id.g53cffde57f_0_0alcomm.robotcore.hardware.Gamepad;
+
+//https://docs.google.com/presentation/d/1IsPbXQ_Xplc64lsegg5QT01OC67hG_Yo8zllR_-8ELo/edit#slide=id.g53cffde57f_0_0alcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -16,13 +17,15 @@ public class BertTeleop extends OpMode {
 
 
 
-    public void init (){
-        telemetry.addData("Status:","initialized")
-       leftDrive = hardwareMap.dcMotor.get("leftDrive");
-       rightDrive = hardwareMap.dcMotor.get("rightDrive");
+    public void init ()
+    {
+        telemetry.addData("Status:","initialized") ;
+        frontRight = hwMap.dcMotor.get("frontRight");
+        backRight = hwMap.dcMotor.get("backRight");
 
         leftDrivePower = gamepad1.left_stick_y;
         rightDrivePower = gamepad1.right_stick_x;
+
 
     }
 
