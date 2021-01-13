@@ -1,0 +1,18 @@
+import PID
+
+//these are tuning values for PID
+pk =
+dk =
+ik =
+
+Class DriveModule:
+
+    method run(Current_Motor_A_Speed, Current_Motor_B_Speed, Current_Angle, Target_Angle, Target_Motor_A_Speed, Target_Motor_B_Speed):
+
+        Motor_AB_Speed_Ratio = PID(Current_Motor_A_Speed, Current_Motor_B_Speed, Current_Angle, Target_Angle, pk, ik, dk)
+
+        New_Motor_A_Speed = Target_Motor_A_Speed * Motor_AB_Speed_Ratio
+
+        New_Motor_B_Speed = Target_Motor_B_Speed * 1 / Motor_AB_Speed_Ratio
+
+        return(New_Motor_A_Speed, New_Motor_B_Speed)
