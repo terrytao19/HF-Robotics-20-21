@@ -21,7 +21,7 @@ public class Robot {
     public Robot(OpMode opMode, Position startingPosition, boolean debuggingMode) {
         this.hardwareMap = opMode.hardwareMap;
         this.telemetry = opMode.telemetry;
-        this.opMode = opMode;
+        //this.opMode = opMode;
         driveController = new DriveController(this, startingPosition, debuggingMode);
 
         imu = opMode.hardwareMap.get(BNO055IMU.class, "imu 1");
