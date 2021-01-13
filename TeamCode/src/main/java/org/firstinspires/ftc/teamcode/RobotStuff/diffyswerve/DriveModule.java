@@ -1,12 +1,14 @@
-package org.firstinspires.ftc.teamcode.robot.diffyswerve;
+package org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve;
+
+
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.robot.Robot;
 
 import org.firstinspires.ftc.robotcore.internal.files.DataLogger;
-import org.firstinspires.ftc.teamcode.Misc.Vector2d;
+import org.firstinspires.ftc.teamcode.RobotStuff.ModuleSide;
 
-public class Drivemodules {
+public class DriveModule {
     Robot robot;
     public final ModuleSide moduleSide;
     boolean debuggingMode;
@@ -17,8 +19,8 @@ public class Drivemodules {
     //ExpansionHubMotor motor1; //top motor
    //ExpansionHubMotor motor2; //bottom motor
 
-    DcMotor Lmotor1; // topmost motor
-    DcMotor Lmotor2; //bottom motor
+    DcMotor motor1; // topmost motor
+    DcMotor motor2; //bottom motor
 
     double lastM2Encoder;
 
@@ -28,7 +30,7 @@ public class Drivemodules {
     public boolean takingShortestPath = false;
     public boolean reversed = false;
 
-    public Drivemodules(Vector2d positionVector) {
+    public DriveModule(Vector2d positionVector) {
         this.positionVector = positionVector;
     }
 
@@ -43,7 +45,7 @@ public class Drivemodules {
     // a WHEEL rev is when the wheel drives a distance equal to its circumference
 
     public final double TICKS_PER_MODULE_REV =8192 ; //ticks per MODULE revolution
-    public final double TICKS_PER_DEGREE = TICKS_PER_MODULE_REV/360;
+    public final double DEGREES_PER_TICK = TICKS_PER_MODULE_REV/360;
 
    ; //ticks per WHEEL revolution( write function for every moment active motors directions they are going and the ratio of the directions)
     // full speed motor lets say
@@ -69,6 +71,8 @@ public class Drivemodules {
     //unit vectors representing motors in the rotation power vs. translation power coordinate system
     //more documentation on this coming soon
     public Vector2d LMOTOR_1_VECTOR = new Vector2d(1/Math.sqrt(2), 1/Math.sqrt(2)); //unit vector (MAY BE SWITCHED with below)
+
+
     public Vector2d LMOTOR_2_VECTOR = new Vector2d(-1/Math.sqrt(2), 1/Math.sqrt(2)); //unit vector
 
     //variables used for path length distance tracking
@@ -89,26 +93,26 @@ public class Drivemodules {
         this.debuggingMode = debuggingMode;
         if (moduleSide == ModuleSide.RIGHT)
         {
-            Lmotor1 = (ExpansionHubMotor) robot.hardwareMap.dcMotor.get("rightTopMotor");
-            Lmotor2 = (ExpansionHubMotor) robot.hardwareMap.dcMotor.get("rightBottomMotor");
+            motor1 = (ExpansionHubMotor) Robot.hardwareMap.dcMotor.get("rightTopMotor");
+            motor2 = (ExpansionHubMotor) robot.hardwareMap.dcMotor.get("rightBottomMotor");
             positionVector = new Vector2d((double)18/2, 0); //points from robot center to right module
         } else {
-            Lmotor1 = (ExpansionHubMotor) robot.hardwareMap.dcMotor.get("leftTopMotor");
-            Lmotor2 = (ExpansionHubMotor) robot.hardwareMap.dcMotor.get("leftBottomMotor");
+            motor1 = (ExpansionHubMotor) robot.hardwareMap.dcMotor.get("leftTopMotor");
+            motor2 = (ExpansionHubMotor) robot.hardwareMap.dcMotor.get("leftBottomMotor");
             positionVector = new Vector2d((double)-18/2, 0); //points from robot center to left module
         }
 
         //set run mode to NOT use encoders for velocity PID regulation
-        Lmotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-       Lmotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //motors will brake when zero power is applied (rather than coast)
-        Lmotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        Lmotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //lastM1Encoder = robot.bulkData2.getMotorCurrentPosition(motor1);
         //lastM2Encoder = robot.bulkData2.getMotorCurrentPosition(motor2);
-        lastM1Encoder = 0;
+        //lastM1Encoder = 0;
         lastM2Encoder = 0;
 
        // if (debuggingMode) {
@@ -424,9 +428,9 @@ public class Drivemodules {
         //if module is reversed, subtract distance traveled instead of adding
         //module is driving in the opposite direction that the encoders "think" it is
         if (reversed) {
-            distanceTraveled -= (motor1Change - motor2Change)/2.0 * CM_PER_TICK;
+            distanceTraveled -= (motor1Change - motor2Change)/2.0 * MM_PER_TICK;
         } else {
-            distanceTraveled += (motor1Change - motor2Change)/2.0 * CM_PER_TICK;
+            distanceTraveled += (motor1Change - motor2Change)/2.0 * MM_PER_TICK;
         }
 
         lastMotor1Encoder = currentMotor1Encoder;

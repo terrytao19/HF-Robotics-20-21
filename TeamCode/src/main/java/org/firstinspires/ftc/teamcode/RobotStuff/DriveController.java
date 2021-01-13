@@ -1,24 +1,21 @@
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.RobotStuff;
 
-import android.graphics.PointF;
-
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.robot.Robot;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Misc.Vector2d;
-import org.firstinspires.ftc.teamcode.robot.diffyswerve.Drivemodules;
+import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.RobotUtil;
+import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.Vector2d;
+import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.Angle;
+import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.DriveModule;
 //this has the code for the drivetrain(Diffy) and the math that goes into it
 
-enum ModuleSide {LEFT, RIGHT}
+public enum ModuleSide {LEFT, RIGHT}
 
-public class Drivetrain {
+public class DriveController {
 
     Robot robot;
 
-    Drivemodules moduleLeft;
-    Drivemodules moduleRight;
+    DriveModule moduleLeft;
+    DriveModule moduleRight;
 
     //used for straight line distance tracking
     double robotDistanceTraveled = 0;
@@ -38,10 +35,10 @@ public class Drivetrain {
     //will multiply the input from the rotation joystick (max value of 1) by this factor
     public final double ROBOT_ROTATION_SCALE_FACTOR = 0.7;
 
-    public DriveController(Robot robot) {
+    public DriveController (Robot robot) {
         this.robot = robot;
-        moduleLeft = new Drivemodules(robot, ModuleSide.LEFT);
-        moduleRight = new Drivemodules(robot, ModuleSide.RIGHT);
+        moduleLeft = new DriveModule(robot, ModuleSide.LEFT);
+        moduleRight = new DriveModule(robot, ModuleSide.RIGHT);
 
         moduleLeftLastDistance = moduleLeft.getDistanceTraveled();
         moduleRightLastDistance = moduleRight.getDistanceTraveled();

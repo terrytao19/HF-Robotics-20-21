@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode.Misc;
-
-import java.util.Vector;
+package org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve;
 
 public class Vector2d {
 
