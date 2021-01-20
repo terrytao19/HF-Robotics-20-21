@@ -42,7 +42,7 @@ public class Angle {
     }
 
     //not stored for each angle, but used to return direction between two angles
-    enum Direction {
+    public enum Direction {
         CLOCKWISE, COUNTER_CLOCKWISE
     }
 

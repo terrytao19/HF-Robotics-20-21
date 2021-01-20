@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Misc;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.Robot;
+
 // This is used before every match and it is used inorder to make sure the encoders haven't drifted( also use EVERY time the code is downloaded)
 //INSTRUCTIONS:
 // align modules to be facing the same direction (make sure not 180 degrees apart)
@@ -17,8 +19,8 @@ public class EncoderReset extends OpMode {
     }
 
 public void loop () {
-        telemetry.addData("LEFT Module Orientation: ", robot.driveController.moduleLeft.getCurrentOrientation().getAngle());
-        telemetry.addData("RIGHT Module Orientation: ", robot.driveController.moduleRight.getCurrentOrientation().getAngle());
+        telemetry.addData("LEFT Module Orientation: ", robot.DriveController.moduleLeft.getCurrentOrientation().getAngle());
+        telemetry.addData("RIGHT Module Orientation: ", robot.DriveController.moduleRight.getCurrentOrientation().getAngle());
         telemetry.update();
 
         if (gamepad1.y) {

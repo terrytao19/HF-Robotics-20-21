@@ -1,14 +1,14 @@
-package org.firstinspires.ftc.teamcode.RobotStuff;
+package org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.robot.Robot;
-
-import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.RobotUtil;
-import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.Vector2d;
-import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.Angle;
-import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.DriveModule;
 //this has the code for the drivetrain(Diffy) and the math that goes into it
+// covert < to the speed of the motor
+//power input for center wheel( convert to powers for each motor)(both motors need to create a specific power)
+//use encoder to adjust motor speeds
+//
 
-public enum ModuleSide {LEFT, RIGHT}
+enum ModuleSide {LEFT, RIGHT}
 
 public class DriveController {
 
