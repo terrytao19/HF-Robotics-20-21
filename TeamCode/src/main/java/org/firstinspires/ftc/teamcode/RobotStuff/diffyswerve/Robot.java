@@ -9,9 +9,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.teamcode.Misc.IMU;
 
 //Has all of the hardware for the robot
 public class Robot {
@@ -26,7 +24,7 @@ public class Robot {
         this.hardwareMap = opMode.hardwareMap;
         this.telemetry = opMode.telemetry;
         this.opMode = opMode;
-        driveController = new DriveController(this, startingPosition, debuggingMode);
+
 
         imu = opMode.hardwareMap.get(BNO055IMU.class, "imu 1");
     }
@@ -40,11 +38,11 @@ public class Robot {
 
         imu.initialize(parameters);
     }
-    public Angle Robot(OpMode opMode, Position startingPosition, boolean isAuto, boolean debuggingMode) {
+    public void Robot(OpMode opMode, Position startingPosition, boolean debuggingMode) {
         this.hardwareMap = opMode.hardwareMap;
         this.telemetry = opMode.telemetry;
         this.opMode = opMode;
-        driveController = new DriveController(this, startingPosition, debuggingMode);
+
     }
 
     public Angle getRobotHeading() {

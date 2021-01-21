@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.robot.Robot;
+
+
 //this has the code for the drivetrain(Diffy) and the math that goes into it
 // covert < to the speed of the motor
 //power input for center wheel( convert to powers for each motor)(both motors need to create a specific power)
 //use encoder to adjust motor speeds
-//
+//yeet1
 
 enum ModuleSide {LEFT, RIGHT}
 
@@ -39,6 +41,7 @@ public class DriveController {
         this.robot = robot;
         moduleLeft = new DriveModule(robot, ModuleSide.LEFT);
         moduleRight = new DriveModule(robot, ModuleSide.RIGHT);
+
 
         moduleLeftLastDistance = moduleLeft.getDistanceTraveled();
         moduleRightLastDistance = moduleRight.getDistanceTraveled();
@@ -85,8 +88,9 @@ public class DriveController {
         boolean isNegativeRotation = robot.getRobotHeading().directionTo(targetAngle) == Angle.Direction.CLOCKWISE;
 
         double absHeadingDiff = robot.getRobotHeading().getDifference(targetAngle);
-        while (absHeadingDiff > ALLOWED_MODULE_ROT_ERROR && linearOpMode.opModeIsActive() && iterations < MAX_ITERATIONS_ROBOT_ROTATE /*&& System.currentTimeMillis() - startTime < ROTATE_ROBOT_TIMEOUT*/) {
+        while (absHeadingDiff > ALLOWED_MODULE_ROT_ERROR && linearOpMode.opModeIsActive() && iterations < MAX_ITERATIONS_ROBOT_ROTATE ) {
             absHeadingDiff = robot.getRobotHeading().getDifference(targetAngle);
+            double power = 1;
             double rotMag = RobotUtil.scaleVal(absHeadingDiff, 0, 25, 0, power); //was max power 1 - WAS 0.4 max power
 
             if (robot.getRobotHeading().directionTo(targetAngle) == Angle.Direction.CLOCKWISE) {
@@ -108,7 +112,7 @@ public class DriveController {
         double moduleLeftDifference, moduleRightDifference;
         double startTime = System.currentTimeMillis();
         do {
-            moduleLeftDifference = moduleLeft.getCurrentOrientation().getDifference(direction.getAngle()); //was getRealAngle() (don't ask)
+            moduleLeftDifference = moduleLeft.getCurrentOrientation().getDifference(direction.getAngle()); //was getRealAngle()
             moduleRightDifference = moduleRight.getCurrentOrientation().getDifference(direction.getAngle());
             moduleLeft.rotateModule(direction, fieldCentric);
             moduleLeft.rotateModule(direction, fieldCentric);
