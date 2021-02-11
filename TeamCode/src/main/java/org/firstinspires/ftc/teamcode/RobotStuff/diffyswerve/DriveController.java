@@ -73,23 +73,23 @@ public class DriveController {
     //do NOT call in a loop
 
     //speed should be scalar from 0 to 1
-    public void drive(Vector2d direction, double cmDistance, double speed, LinearOpMode linearOpMode) {
+    //public void drive(Vector2d direction, double cmDistance, double speed, LinearOpMode linearOpMode) {
         //turns modules to correct positions for straight driving
         //rotateModules()
-        resetDistanceTraveled();
-        while (getDistanceTraveled() < cmDistance && linearOpMode.opModeIsActive()) {
+      //  resetDistanceTraveled();
+      //  while (getDistanceTraveled() < cmDistance && linearOpMode.opModeIsActive()) {
             //slows down drive power in certain range
-            if (cmDistance - getDistanceTraveled() < START_DRIVE_SLOWDOWN_AT_CM) {
-                //speed = RobotUtil.scaleVal(cmDistance - getDistanceTraveled(), 0, START_DRIVE_SLOWDOWN_AT_CM, 0.1, 1);
-            }
-            updateTracking();
-            update(direction.normalize(speed), 0);
+        //    if (cmDistance - getDistanceTraveled() < START_DRIVE_SLOWDOWN_AT_CM) {
+       //         //speed = RobotUtil.scaleVal(cmDistance - getDistanceTraveled(), 0, START_DRIVE_SLOWDOWN_AT_CM, 0.1, 1);
+         //   }
+        //    updateTracking();
+          //  update(direction.normalize(speed), 0);
 
-            linearOpMode.telemetry.addData("Driving robot", "");
-            linearOpMode.telemetry.update();
-        }
-        update(Vector2d.ZERO, 0);
-    }
+        //    linearOpMode.telemetry.addData("Driving robot", "");
+           // linearOpMode.telemetry.update();
+      //  }
+       // update(Vector2d.ZERO, 0);
+  //  }
     //converts joystick vectors to parameters for update() method
     //called every loop cycle in TeleOp
     public void updateUsingJoysticks(Vector2d joystick1, Vector2d joystick2, boolean absHeadingMode) {
