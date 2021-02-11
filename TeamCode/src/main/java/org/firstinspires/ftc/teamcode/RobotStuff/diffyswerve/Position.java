@@ -1,7 +1,4 @@
-package org.firstinspires.ftc.teamcode.Misc;
-
-import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.Angle;
-import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.Vector2d;
+package org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve;
 
 public class Position {
     //absolute position on the field
@@ -23,30 +20,42 @@ public class Position {
     public void increment (double deltaX, double deltaY, double deltaHeading) {
         this.x += deltaX;
         this.y += deltaY;
-        this.heading = new Angle(heading.getAngle() = deltaHeading, heading.getType());
+        this.heading = new Angle(heading.getAngle() + deltaHeading, heading.getType());
     }
     public void incrementHeading (double deltaHeading){
         heading = heading.rotateBy(deltaHeading, Angle.Direction.CLOCKWISE);
 
     }
-    public boolean Range (Position otherPosition, double MaxErrorx, double MaxErrory, double headingMaxError){
+    public boolean withinRange (Position otherPosition, double xMaxError, double yMaxError, double headingMaxError) {
         double xError = getAbsXDifference(otherPosition);
         double yError = getAbsYDifference(otherPosition);
         double headingError = getAbsHeadingDifference(otherPosition);
-        return xError < MaxErrorx && yError < MaxErrory && headingError < headingMaxError;
-
+        return xError < xMaxError && yError < yMaxError && headingError < headingMaxError;
     }
+
+    //returns abs value
     public double getAbsXDifference (Position otherPosition) {
         return Math.abs(this.x - otherPosition.x);
-
     }
-    public double getAbsYDifference(Position otherPosition){
+
+    //returns abs value
+    public double getAbsYDifference(Position otherPosition) {
         return Math.abs(this.y - otherPosition.y);
-
     }
+
+    //returns abs value
     public double getAbsHeadingDifference(Position otherPosition) {
         return this.heading.getDifference(otherPosition.heading);
     }
+
+    public double getXDifference (Position otherPosition) {
+        return otherPosition.x - this.x; //changed subtraction order
+    }
+
+    public double getYDifference(Position otherPosition) {
+        return otherPosition.y - this.y;
+    }
+
     public double getSignedHeadingDifference(Position otherPosition) {
         double difference = this.heading.getDifference(otherPosition.heading);
         if (this.heading.directionTo(otherPosition.heading) == Angle.Direction.COUNTER_CLOCKWISE) {
@@ -54,11 +63,29 @@ public class Position {
         }
         return difference;
     }
+
+    //returns vector FROM this position TO target position
+    public Vector2d getVectorTo (Position targetPosition) {
+        return new Vector2d(getXDifference(targetPosition), getYDifference(targetPosition));
+    }
+
+    //returns unit vector FROM this position TO target position
     public Vector2d getDirectionTo (Position targetPosition) {
         return getVectorTo(targetPosition).getUnitVector();
     }
+
+    //returns Direction FROM this position TO target position
     public Angle.Direction getRotationDirectionTo (Position targetPosition) {
         return this.heading.directionTo(targetPosition.heading);
     }
 
+
+    //completely resets robot position
+    public void reset () {
+        x = 0;
+        y = 0;
+        heading = new Angle(0, Angle.AngleType.ZERO_TO_360_HEADING);
+    }
 }
+
+

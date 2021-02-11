@@ -26,6 +26,8 @@ public class Robot {
         this.opMode = opMode;
 
 
+
+
         imu = opMode.hardwareMap.get(BNO055IMU.class, "imu 1");
     }
 
@@ -38,12 +40,7 @@ public class Robot {
 
         imu.initialize(parameters);
     }
-    public void Robot(OpMode opMode, Position startingPosition, boolean debuggingMode) {
-        this.hardwareMap = opMode.hardwareMap;
-        this.telemetry = opMode.telemetry;
-        this.opMode = opMode;
 
-    }
 
     public Angle getRobotHeading() {
         //heading is of NEG_180_TO_180_HEADING type by default (no need for conversion)

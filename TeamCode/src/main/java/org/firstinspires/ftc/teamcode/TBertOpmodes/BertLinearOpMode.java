@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.TBertOpmodes;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,10 +12,17 @@ import org.firstinspires.ftc.teamcode.RobotStuff.Hardware.HardwareBert;
 import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.DriveModule;
 
 import Dashboard.RobotConstants;
+@Config
 
 public class BertLinearOpMode extends OpMode {
     public HardwareBert robot;
-   FtcDashboard dashboard = FtcDashboard.getInstance();
+    FtcDashboard dashboard;
+
+    public FtcDashboard getDashboard() {
+        return dashboard;
+    }
+
+    FtcDashboard dashboard = FtcDashboard.getInstance();
    TelemetryPacket packet = new TelemetryPacket();
 
   // ElapsedTime time = new ElapsedTime();

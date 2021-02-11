@@ -5,15 +5,18 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Misc.IMU;
+import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.DriveModule;
 
 public class HardwareBert {
     HardwareMap hwMap = null;
 
     public Intake intake = null;
+    public DriveModule dm = null;
 
     public IMU imu;
 
     public ElapsedTime time = new ElapsedTime();
+
 
     public HardwareBert(){
 
@@ -22,6 +25,7 @@ public class HardwareBert {
         hwMap = ahwMap;
 
         intake = new Intake(hwMap);
+        dm = new DriveModule(hwMap);
         imu = new IMU(hwMap);
 
     }

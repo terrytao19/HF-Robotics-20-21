@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.robot.Robot;
 
+import org.firstinspires.ftc.teamcode.Misc.DataLogger;
+
 
 //this has the code for the drivetrain(Diffy) and the math that goes into it
 // covert < to the speed of the motor
@@ -18,6 +20,8 @@ public class DriveController {
 
     DriveModule moduleLeft;
     DriveModule moduleRight;
+    DataLogger dataLogger;
+    boolean debuggingMode;
 
     //used for straight line distance tracking
     double robotDistanceTraveled = 0;
@@ -36,15 +40,20 @@ public class DriveController {
 
     //will multiply the input from the rotation joystick (max value of 1) by this factor
     public final double ROBOT_ROTATION_SCALE_FACTOR = 0.7;
+    public final double ROBOT_ROTATION_WHILE_TRANS_SCALE_FACTOR = 0.2;
+    public final double ROBOT_ROTATION_SCALE_FACTOR_ABS = 1;
+    public final double ROBOT_ROTATION_WHILE_TRANS_SCALE_FACTOR_ABS = 1;
 
-    public DriveController (Robot robot) {
+
+
+    public DriveController(Robot robot, Position startingPosition, boolean debuggingMode) {
         this.robot = robot;
-        moduleLeft = new DriveModule(robot, ModuleSide.LEFT);
-        moduleRight = new DriveModule(robot, ModuleSide.RIGHT);
+        this.debuggingMode = debuggingMode;
+        moduleLeft = new DriveModule(robot, ModuleSide.LEFT, debuggingMode);
+        moduleRight = new DriveModule(robot, ModuleSide.RIGHT, debuggingMode);
 
-
-        moduleLeftLastDistance = moduleLeft.getDistanceTraveled();
-        moduleRightLastDistance = moduleRight.getDistanceTraveled();
+        //todo: change to parameter
+        Position robotPosition = startingPosition;
     }
 
     //converts joystick vectors to parameters for update() method
@@ -81,80 +90,28 @@ public class DriveController {
         }
         update(Vector2d.ZERO, 0);
     }
+    //converts joystick vectors to parameters for update() method
+    //called every loop cycle in TeleOp
+    public void updateUsingJoysticks(Vector2d joystick1, Vector2d joystick2, boolean absHeadingMode) {
 
-    public void rotateRobot(Angle targetAngle, LinearOpMode linearOpMode) {
-        //rotateModules
-        int iterations = 0;
-        boolean isNegativeRotation = robot.getRobotHeading().directionTo(targetAngle) == Angle.Direction.CLOCKWISE;
-
-        double absHeadingDiff = robot.getRobotHeading().getDifference(targetAngle);
-        while (absHeadingDiff > ALLOWED_MODULE_ROT_ERROR && linearOpMode.opModeIsActive() && iterations < MAX_ITERATIONS_ROBOT_ROTATE ) {
-            absHeadingDiff = robot.getRobotHeading().getDifference(targetAngle);
-            double power = 1;
-            double rotMag = RobotUtil.scaleVal(absHeadingDiff, 0, 25, 0, power); //was max power 1 - WAS 0.4 max power
-
-            if (robot.getRobotHeading().directionTo(targetAngle) == Angle.Direction.CLOCKWISE) {
-                update(Vector2d.ZERO, -rotMag);
-                if (!isNegativeRotation) iterations++;
-            } else {
-                update(Vector2d.ZERO, rotMag);
-                if (isNegativeRotation) iterations++;
-            }
-            linearOpMode.telemetry.addData("Rotating ROBOT", "");
-            linearOpMode.telemetry.update();
+        if (absHeadingMode) {
+            if (joystick1.getMagnitude() == 0)
+                updateAbsRotation(joystick1, joystick2, ROBOT_ROTATION_SCALE_FACTOR_ABS);
+            else
+                updateAbsRotation(joystick1, joystick2, ROBOT_ROTATION_WHILE_TRANS_SCALE_FACTOR_ABS);
+        } else {
+            if (joystick1.getMagnitude() == 0)
+                update(joystick1, -joystick2.getX() * ROBOT_ROTATION_SCALE_FACTOR);
+            else update(joystick1, -joystick2.getX() * ROBOT_ROTATION_WHILE_TRANS_SCALE_FACTOR);
         }
-        update(Vector2d.ZERO, 0);
     }
-
-    //both modules must be within allowed error for method to return
-    public void rotateModules(Vector2d direction, boolean fieldCentric, double timemoutMS, LinearOpMode linearOpMode) {
-        //TODO: check if this will work with reversed modules
-        double moduleLeftDifference, moduleRightDifference;
-        double startTime = System.currentTimeMillis();
-        do {
-            moduleLeftDifference = moduleLeft.getCurrentOrientation().getDifference(direction.getAngle()); //was getRealAngle()
-            moduleRightDifference = moduleRight.getCurrentOrientation().getDifference(direction.getAngle());
-            moduleLeft.rotateModule(direction, fieldCentric);
-            moduleLeft.rotateModule(direction, fieldCentric);
-            moduleRight.rotateModule(direction, fieldCentric);
-
-            linearOpMode.telemetry.addData("Rotating MODULES", "");
-            linearOpMode.telemetry.update();
-        } while ((moduleLeftDifference > ALLOWED_MODULE_ROT_ERROR || moduleRightDifference > ALLOWED_MODULE_ROT_ERROR) && linearOpMode.opModeIsActive() && System.currentTimeMillis() < startTime + timemoutMS);
-        update(Vector2d.ZERO, 0);
+    public void updateAbsRotation(Vector2d translationVector, Vector2d joystick2, double scaleFactor) {
+        Angle targetAngle = joystick2.getAngle(); //was + .convertAngle(Angle.AngleType.NEG_180_TO_180_HEADING)
+        if (joystick2.getMagnitude() > 0.1 && targetAngle.getDifference(robot.getRobotHeading()) > 3) {
+            moduleLeft.updateTargetAbsRotation(translationVector, targetAngle, scaleFactor);
+            moduleRight.updateTargetAbsRotation(translationVector, targetAngle, scaleFactor);
+        } else {
+            moduleLeft.updateTarget(translationVector, 0);
+            moduleRight.updateTarget(translationVector, 0);
+        }
     }
-
-
-    //TRACKING METHODS
-    //methods for path length tracking in autonomous (only useful for driving in straight lines)
-
-    public void resetDistanceTraveled() {
-        previousRobotDistanceTraveled = robotDistanceTraveled;
-        robotDistanceTraveled = 0;
-
-        moduleRight.resetDistanceTraveled();
-        moduleLeft.resetDistanceTraveled();
-    }
-
-    public void updateTracking() {
-        moduleRight.updateTracking();
-        moduleLeft.updateTracking();
-
-        double moduleLeftChange = moduleLeft.getDistanceTraveled() - moduleLeftLastDistance;
-        double moduleRightChange = moduleRight.getDistanceTraveled() - moduleRightLastDistance;
-        robotDistanceTraveled += (moduleLeftChange + moduleRightChange) / 2;
-
-        moduleLeftLastDistance = moduleLeft.getDistanceTraveled();
-        moduleRightLastDistance = moduleRight.getDistanceTraveled();
-    }
-
-    //note: returns ABSOLUTE VALUE
-    public double getDistanceTraveled() {
-        return Math.abs(robotDistanceTraveled);
-    }
-
-    public void resetEncoders() {
-        moduleRight.resetEncoders();
-        moduleLeft.resetEncoders();
-    }
-}
