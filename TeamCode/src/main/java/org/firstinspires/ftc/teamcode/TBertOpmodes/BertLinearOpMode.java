@@ -8,22 +8,20 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Misc.PID;
-import org.firstinspires.ftc.teamcode.RobotStuff.Hardware.HardwareBert;
 import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.DriveModule;
 
 import Dashboard.RobotConstants;
-@Config
+//@Config
 
-public class BertLinearOpMode extends OpMode {
-    public HardwareBert robot;
-    FtcDashboard dashboard;
+//public class BertLinearOpMode extends OpMode {
 
-    public FtcDashboard getDashboard() {
-        return dashboard;
-    }
+    //FtcDashboard dashboard;
 
-    FtcDashboard dashboard = FtcDashboard.getInstance();
-   TelemetryPacket packet = new TelemetryPacket();
+   // public FtcDashboard getDashboard() {
+   //     return dashboard;
+  //  }
+
+
 
   // ElapsedTime time = new ElapsedTime();
 
@@ -50,28 +48,6 @@ public class BertLinearOpMode extends OpMode {
 
         //gets the output value, which is set in the method updatePID()
         return pid.getOutput();
-    }
-    */
-    DcMotor leftMotor1;
-    DcMotor leftMotor2;
-    DcMotor rightMotor1;
-    DcMotor rightMotor2;
 
-    @Override
-    public void init() {
-        leftMotor1 = hardwareMap.dcMotor.get("left1");
-        leftMotor2 = hardwareMap.dcMotor.get("left2");
-        rightMotor1 = hardwareMap.dcMotor.get("right1");
-        rightMotor2 = hardwareMap.dcMotor.get("right2");
-    }
-
-    public void loop(){
-        leftMotor1.setPower(RobotConstants.MOTOR_1);
-        leftMotor2.setPower(RobotConstants.MOTOR_2);
-        rightMotor1.setPower(RobotConstants.MOTOR_3);
-        rightMotor2.setPower(RobotConstants.MOTOR_4);
-
-
-    }
-
-}
+*/
+//}

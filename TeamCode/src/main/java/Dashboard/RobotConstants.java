@@ -25,9 +25,6 @@ public class RobotConstants {
     public static double DRIVE_GEAR_RATIO = 1.387755102;
     public static double STEERING_GEAR_RATIO = 3.4285714286;
 
-    public static double MOTOR_1 = 1;
-    public static double MOTOR_2 = -1;
-    public static double MOTOR_3 = 1;
-    public static double MOTOR_4 = -1;
+    public static double Power = 1;
 
 }
