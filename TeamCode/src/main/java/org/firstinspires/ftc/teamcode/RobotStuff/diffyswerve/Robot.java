@@ -16,21 +16,22 @@ import org.firstinspires.ftc.teamcode.Misc.IMU;
 
 //Has all of the hardware for the robot
 public class Robot {
-    HardwareMap hwMap = null;
+
     public Intake intake = null;
 
     Telemetry telemetry;
     HardwareMap hardwareMap;
     OpMode opMode;
     BNO055IMU imu;
-    public DriveController driveController;
-    public ElapsedTime time = new ElapsedTime();
+    DriveController driveController;
+    ElapsedTime time = new ElapsedTime();
 
 
     public Robot(OpMode opMode, Position startingPosition, boolean isAuto, boolean debuggingMode) {
         this.hardwareMap = opMode.hardwareMap;
         this.telemetry = opMode.telemetry;
         this.opMode = opMode;
+        driveController = new DriveController(this);
 
 
 
@@ -74,15 +75,6 @@ public class Robot {
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-
-    public void init(HardwareMap ahwMap){
-        hwMap = ahwMap;
-
-        intake = new Robot.Intake(hwMap);
-
-    }
-
-
     public static class Intake {
         public DcMotor IntakeMotor;
         public static final double INTAKE_POWER = 0.5;
@@ -102,9 +94,9 @@ public class Robot {
 
     }
 
-    public static class Shooter {
-        public Shooter(HardwareMap hwMap) {
-        }
-    }
+   // public static class Shooter {
+      //  public Shooter(HardwareMap hwMap) {
+       // }
+   // }
 }
 

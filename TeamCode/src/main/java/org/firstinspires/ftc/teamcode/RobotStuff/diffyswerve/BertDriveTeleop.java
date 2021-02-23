@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.teamcode.Misc.ButtonToggle;
 
     @TeleOp(name = "BertTeleOp")
@@ -24,7 +25,7 @@ import org.firstinspires.ftc.teamcode.Misc.ButtonToggle;
         double mathTime = 0;
 
         public void init(){
-            robot.init(hardwareMap);
+            robot = new Robot();
         }
 
         public void init_loop(){}
