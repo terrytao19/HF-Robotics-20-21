@@ -57,6 +57,7 @@ public class DriveModule {
 
     //TODO: tune this variable (see commented out section in TeleOp)
     //was 1.7
+    //what
     public double ROT_ADVANTAGE = 1.7; //max rotation power divided by max translation power (scaling factor)
 
 
