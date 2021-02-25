@@ -21,22 +21,22 @@ public class Robot {
 
     Telemetry telemetry;
     HardwareMap hardwareMap;
-    OpMode opMode;
     BNO055IMU imu;
     DriveController driveController;
     ElapsedTime time = new ElapsedTime();
 
+    public void init(HardwareMap ahwMap) {
+        // Save reference to Hardware map
+        hardwareMap = ahwMap;
+    }
 
-    public Robot(OpMode opMode, Position startingPosition, boolean isAuto, boolean debuggingMode) {
-        this.hardwareMap = opMode.hardwareMap;
-        this.telemetry = opMode.telemetry;
-        this.opMode = opMode;
+    public Robot() {
         driveController = new DriveController(this);
 
 
 
 
-        imu = opMode.hardwareMap.get(BNO055IMU.class, "imu 1");
+        imu = hardwareMap.get(BNO055IMU.class, "imu 1");
     }
 
         public void initIMU() {
