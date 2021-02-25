@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Misc.ButtonToggle;
 
     public class BertDriveTeleop  extends OpMode {
         // instance of hardware class
-        Robot robot;
+        Robot robot = new Robot();
         FtcDashboard dashboard = FtcDashboard.getInstance();
         TelemetryPacket packet = new TelemetryPacket();
 
@@ -24,9 +24,7 @@ import org.firstinspires.ftc.teamcode.Misc.ButtonToggle;
         double startTime = 0;
         double mathTime = 0;
 
-        public void init(){
-            robot = new Robot();
-        }
+        public void init(){}
 
         public void init_loop(){}
 
