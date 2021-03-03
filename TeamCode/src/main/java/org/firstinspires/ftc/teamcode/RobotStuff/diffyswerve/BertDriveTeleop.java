@@ -88,10 +88,13 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
          * Left stick button: reset lift
          */
 
+        loopStartTime = System.currentTimeMillis();
+
         telemetry.addData("OS loop time: ", loopEndTime - loopStartTime);
 
         //code to get joystick readings
-        //
+
+
         joystick1 = new Vector2d(gamepad1.left_stick_x, -gamepad1.left_stick_y); //LEFT joystick
         joystick2 = new Vector2d(gamepad1.right_stick_x+((gamepad1.right_stick_x/Math.abs(gamepad1.right_stick_x))*0.1), -gamepad1.right_stick_y); //RIGHT joystick
         slowModeDrive = false;
@@ -99,12 +102,15 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
 
 
 
+
         telemetry.addData("Robot Heading: ", robot.getRobotHeading());
+
         telemetry.addData("Joystick 2 Angle (180 heading mode): ", joystick2.getAngleDouble(Angle.AngleType.NEG_180_TO_180_HEADING));
         telemetry.addData("Heading to joystick difference: ", joystick2.getAngle().getDifference(robot.getRobotHeading()));
 
-        telemetry.addData("StartTime: ", startTime);
-        telemetry.addData("MathTime: ", mathTime);
+        telemetry.addData("Left Orientation: ", robot.driveController.moduleLeft.getCurrentOrientation());
+        telemetry.addData("Right Orientation: ", robot.driveController.moduleRight.getCurrentOrientation());
+
 
 
         //slow mode/range stuffs
