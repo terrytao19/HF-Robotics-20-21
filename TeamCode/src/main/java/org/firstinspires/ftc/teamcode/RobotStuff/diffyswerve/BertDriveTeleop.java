@@ -91,6 +91,7 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
         telemetry.addData("OS loop time: ", loopEndTime - loopStartTime);
 
         //code to get joystick readings
+        //
         joystick1 = new Vector2d(gamepad1.left_stick_x, -gamepad1.left_stick_y); //LEFT joystick
         joystick2 = new Vector2d(gamepad1.right_stick_x+((gamepad1.right_stick_x/Math.abs(gamepad1.right_stick_x))*0.1), -gamepad1.right_stick_y); //RIGHT joystick
         slowModeDrive = false;
