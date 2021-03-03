@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -11,8 +10,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.teamcode.Misc.IMU;
 
 //Has all of the hardware for the robot
 public class Robot {
@@ -24,22 +21,32 @@ public class Robot {
     BNO055IMU imu;
     DriveController driveController;
     ElapsedTime time = new ElapsedTime();
+    OpMode opMode;
 
-    public void init(HardwareMap ahwMap) {
-        // Save reference to Hardware map
-        hardwareMap = ahwMap;
+
+
+    public Robot(OpMode opMode, Position startingPosition, boolean isAuto, boolean debuggingMode) {
+        this.hardwareMap = opMode.hardwareMap;
+        this.telemetry = opMode.telemetry;
+        this.opMode = opMode;
+        driveController = new DriveController(this, startingPosition, debuggingMode);
+
+        imu = opMode.hardwareMap.get(BNO055IMU.class, "imu 1");
+
     }
 
-    public Robot() {
-        driveController = new DriveController(this);
-
-
-
-
-        imu = hardwareMap.get(BNO055IMU.class, "imu 1");
+    //defaults to debugging mode off, starting position of 0, 0
+    public Robot(OpMode opMode, boolean isAuto) {
+        this(opMode, new Position(0, 0, new Angle(0, Angle.AngleType.ZERO_TO_360_HEADING)), isAuto, false);
     }
 
-        public void initIMU() {
+    //defaults to starting position of 0, 0
+    public Robot(OpMode opMode, boolean isAuto, boolean debuggingMode) {
+        this(opMode, new Position(0, 0, new Angle(0, Angle.AngleType.ZERO_TO_360_HEADING)), isAuto, debuggingMode);
+    }
+
+
+    public void initIMU() {
         //this.IMUReversed = reversed;
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.mode = BNO055IMU.SensorMode.IMU;
@@ -50,12 +57,13 @@ public class Robot {
     }
 
 
-    public Angle getRobotHeading () {
+    public Angle getRobotHeading() {
         //heading is of NEG_180_TO_180_HEADING type by default (no need for conversion)
         double heading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-        return new Angle(-heading, Angle.AngleType.NEG_180_TO_180_HEADING);
+
 
         //todo: check if heading should be negative or not
+        return new Angle(-heading, Angle.AngleType.NEG_180_TO_180_HEADING);
     }
 
     public double getRobotHeadingDouble(Angle.AngleType type) {
@@ -74,6 +82,12 @@ public class Robot {
         motor.setMode(RUN_MODE);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
+
+    //MOTORS
+    public void moveMotor(DcMotor motor, double power) {
+        motor.setPower(power);
+    }
+
 
     public static class Intake {
         public DcMotor IntakeMotor;

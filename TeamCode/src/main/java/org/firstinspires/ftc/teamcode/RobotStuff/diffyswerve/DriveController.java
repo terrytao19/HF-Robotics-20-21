@@ -22,11 +22,13 @@ public class DriveController {
 
     Robot robot;
 
-    DriveModule moduleLeft;
-    DriveModule moduleRight;
+    public DriveModule moduleLeft;
+    public DriveModule moduleRight;
+
+    Position robotPosition;
+
     DataLogger dataLogger;
     boolean debuggingMode;
-    Position robotPosition;
 
     //used for straight line distance tracking
     double robotDistanceTraveled = 0;
@@ -34,22 +36,36 @@ public class DriveController {
     double moduleLeftLastDistance;
     double moduleRightLastDistance;
 
+    final double WHEEL_TO_WHEEL_CM = 32.5; //in cm (was 18*2.54)
+
     //tolerance for module rotation (in degrees)
     public final double ALLOWED_MODULE_ROT_ERROR = 5;
 
+    //tolerance for robot rotation (in degrees)
+    public final double ALLOWED_ROBOT_ROT_ERROR = 5; //was 3
+
     //distance from target when power scaling will begin
-    public final double START_DRIVE_SLOWDOWN_AT_CM = 15;
+    public final double START_DRIVE_SLOWDOWN_AT_CM = 50;
 
     //maximum number of times the robot will try to correct its heading when rotating
     public final int MAX_ITERATIONS_ROBOT_ROTATE = 2;
-    // timeouts
-    public double DEFAULT_TIMEOUT_ROT_MODULES = 750; //was 500
+
+    //minimum drive power (ever)
+    //TODO: actually set this to minimum possible power
+    double MIN_DRIVE_POWER = 0.3;
 
     //will multiply the input from the rotation joystick (max value of 1) by this factor
     public final double ROBOT_ROTATION_SCALE_FACTOR = 0.7;
     public final double ROBOT_ROTATION_WHILE_TRANS_SCALE_FACTOR = 0.2;
     public final double ROBOT_ROTATION_SCALE_FACTOR_ABS = 1;
     public final double ROBOT_ROTATION_WHILE_TRANS_SCALE_FACTOR_ABS = 1;
+
+
+    //default timeouts
+    public double DEFAULT_TIMEOUT_ROT_MODULES = 750; //was 500
+    public double ROTATE_ROBOT_TIMEOUT = 3000;
+    public double DRIVE_TIMEOUT = 4000;
+
 
 
     public DriveController(Robot robot, Position startingPosition, boolean debuggingMode) {
@@ -105,24 +121,130 @@ public class DriveController {
             moduleRight.updateTarget(translationVector, 0);
         }
     }
-    //speed should be scalar from 0 to 1
-    public void drive(Vector2d direction, double cmDistance, double speed, LinearOpMode linearOpMode) {
+    public void drive(Vector2d direction, double cmDistance, double speed, boolean fixModules, boolean alignModules, LinearOpMode linearOpMode) {
+        cmDistance = cmDistance; //BAD :(
+        double initalSpeed = speed;
+
+        alignModules = true;
+
         //turns modules to correct positions for straight driving
-        //rotateModules()
+        if (alignModules)
+            rotateModules(direction, false, DEFAULT_TIMEOUT_ROT_MODULES, linearOpMode);
+
+        //sets a flag in modules so that they will not try to correct rotation while driving
+        if (fixModules) setRotateModuleMode(DO_NOT_ROTATE_MODULES);
+        else setRotateModuleMode(ROTATE_MODULES); //reset mode
+
         resetDistanceTraveled();
-        while (getDistanceTraveled() < cmDistance && linearOpMode.opModeIsActive()) {
+        updateTracking(); //ADDED
+
+        while (getDistanceTraveled() < cmDistance && /*System.currentTimeMillis() - startTime < DRIVE_TIMEOUT && */linearOpMode.opModeIsActive()) {
+
+            updateTracking();
             //slows down drive power in certain range
             if (cmDistance - getDistanceTraveled() < START_DRIVE_SLOWDOWN_AT_CM) {
-                speed = RobotUtil.scaleVal(cmDistance - getDistanceTraveled(), 0, START_DRIVE_SLOWDOWN_AT_CM, 0.1, 1);
+                speed = RobotUtil.scaleVal(cmDistance - getDistanceTraveled(), 0, START_DRIVE_SLOWDOWN_AT_CM, MIN_DRIVE_POWER, initalSpeed);
+                linearOpMode.telemetry.addData("speed: ", speed);
             }
+
+            update(direction.normalize(Math.abs(speed)), 0); //added ABS for DEBUGGING
+
+            linearOpMode.telemetry.addData("Driving robot", "");
+            linearOpMode.telemetry.addData("Distance Traveled", getDistanceTraveled());
+            linearOpMode.telemetry.addData("CM Distance", cmDistance);
+
+            linearOpMode.telemetry.update();
+
+
+        }
+        update(Vector2d.ZERO, 0);
+        setRotateModuleMode(ROTATE_MODULES); //reset mode
+    }
+
+    //aligns modules before driving but DOES NOT fix them (modules will adjust orientation while driving)
+    public void drive(Vector2d direction, double cmDistance, double speed, LinearOpMode linearOpMode) {
+        drive(direction, cmDistance, speed, false, true, linearOpMode);
+    }
+
+
+
+    //speed should be scalar from 0 to 1
+    public void driveWithRange(Vector2d direction, double stopAtDistance, boolean forward, boolean frontSensor, double speed, double timeout, boolean fixModules, boolean alignModules, LinearOpMode linearOpMode) {
+        if (frontSensor) stopAtDistance = stopAtDistance + 10; //account for inset into robot
+        double initalSpeed = speed;
+
+        //turns modules to correct positions for straight driving
+        if (alignModules) rotateModules(direction, true, DEFAULT_TIMEOUT_ROT_MODULES, linearOpMode);
+
+        //sets a flag in modules so that they will not try to correct rotation while driving
+        if (fixModules) setRotateModuleMode(DO_NOT_ROTATE_MODULES);
+        boolean continueLoop;
+
+        double startTime = System.currentTimeMillis();
+        resetDistanceTraveled();
+
+        do {
+            //loop stop condition
+            if (forward) continueLoop = 0 > stopAtDistance;
+            else continueLoop = 1000000 < stopAtDistance;
+
+            //slows down drive power in certain range
             updateTracking();
-            update(direction.normalize(speed), 0);
+            update(direction.normalize(Math.abs(speed)), 0); //added ABS for DEBUGGING
 
             linearOpMode.telemetry.addData("Driving robot", "");
             linearOpMode.telemetry.update();
+
+        } while (continueLoop && System.currentTimeMillis() - startTime < DRIVE_TIMEOUT && System.currentTimeMillis() - startTime < timeout && linearOpMode.opModeIsActive());
+
+        update(Vector2d.ZERO, 0);
+        setRotateModuleMode(ROTATE_MODULES); //reset mode
+    }
+
+    //defaults to fix modules and align modules both TRUE
+    public void driveWithRange(Vector2d direction, double stopAtDistance, boolean forward, boolean frontSensor, double speed, double timeout, LinearOpMode linearOpMode) {
+        driveWithRange(direction, stopAtDistance, forward, frontSensor, speed, timeout, true, true, linearOpMode);
+    }
+
+    //speed should be scalar from 0 to 1
+    public void driveWithTimeout(Vector2d direction, double cmDistance, double speed, double timeout, boolean fixModules, boolean alignModules, LinearOpMode linearOpMode) {
+        cmDistance = cmDistance / 2.0; //BAD :(
+        double startTime = System.currentTimeMillis();
+        double initalSpeed = speed;
+
+        //turns modules to correct positions for straight driving
+        if (alignModules) rotateModules(direction, true, DEFAULT_TIMEOUT_ROT_MODULES, linearOpMode);
+
+        //sets a flag in modules so that they will not try to correct rotation while driving
+        if (fixModules) setRotateModuleMode(DO_NOT_ROTATE_MODULES);
+        else setRotateModuleMode(ROTATE_MODULES); //reset mode
+
+        resetDistanceTraveled();
+        //updateTracking(); //ADDED
+
+        while (getDistanceTraveled() < cmDistance && System.currentTimeMillis() - startTime < timeout && linearOpMode.opModeIsActive()) {
+            //slows down drive power in certain range
+            if (cmDistance - getDistanceTraveled() < START_DRIVE_SLOWDOWN_AT_CM) {
+                speed = RobotUtil.scaleVal(cmDistance - getDistanceTraveled(), 0, START_DRIVE_SLOWDOWN_AT_CM, MIN_DRIVE_POWER, initalSpeed);
+                linearOpMode.telemetry.addData("speed: ", speed);
+            }
+            updateTracking(); //WAS MOVED ABOVE
+            update(direction.normalize(Math.abs(speed)), 0); //added ABS for DEBUGGING
+
+            linearOpMode.telemetry.addData("Driving robot", "");
+            linearOpMode.telemetry.update();
+
         }
         update(Vector2d.ZERO, 0);
+        setRotateModuleMode(ROTATE_MODULES); //reset mode
     }
+
+    //Flips between robot and field centric
+    public void setDrivingStyle(boolean toRobotCentric) {
+        moduleLeft.setDrivingStyle(toRobotCentric);
+        moduleRight.setDrivingStyle(toRobotCentric);
+    }
+
 
 
     public void rotateRobot (Angle targetAngle, LinearOpMode linearOpMode) {
@@ -178,6 +300,8 @@ public class DriveController {
         moduleLeft.resetDistanceTraveled();
     }
 
+
+
     public void updateTracking() {
         moduleRight.updateTracking();
         moduleLeft.updateTracking();
@@ -189,6 +313,12 @@ public class DriveController {
         moduleLeftLastDistance = moduleLeft.getDistanceTraveled();
         moduleRightLastDistance = moduleRight.getDistanceTraveled();
     }
+
+    public void setRotateModuleMode(DriveModule.RotateModuleMode rotateModuleMode) {
+        moduleLeft.rotateModuleMode = rotateModuleMode;
+        moduleRight.rotateModuleMode = rotateModuleMode;
+    }
+
 
     //note: returns ABSOLUTE VALUE
     public double getDistanceTraveled() {

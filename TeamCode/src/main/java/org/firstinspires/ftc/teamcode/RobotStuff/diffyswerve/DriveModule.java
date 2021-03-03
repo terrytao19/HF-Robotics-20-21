@@ -74,6 +74,8 @@ public class DriveModule {
     }
     public RotateModuleMode rotateModuleMode = RotateModuleMode.ROTATE_MODULES;
 
+    public boolean isRobotCentric = false;
+
     public DriveModule(Robot robot, ModuleSide moduleSide, boolean debuggingMode) {
         this.robot = robot;
         this.moduleSide = moduleSide;
@@ -120,31 +122,17 @@ public class DriveModule {
             dataLogger.newLine();
         }
     }
+
     //defaults to false for debugging mode (optional parameter)
     public DriveModule(Robot robot, ModuleSide moduleSide) {
         this(robot, moduleSide, false);
     }
 
-    /**
-     * this could be good for easier code
-     * Set this module's rotation and translation speeds.
-     *  steerSpeed the speed to turn the module at (change the azimuth of the wheel) in radians/sec
-     * spinSpeed  the speed to spin the wheel at in radians/sec
-     */
-   /* private void setModuleSpeeds(double steerSpeed, double spinSpeed) {
-        // (rad/s) the portion of the motors' rotation that goes towards changing the azimuth of the wheel
-        double motorSteerSpeed = steerSpeed * RobotConstants.STEERING_GEAR_RATIO;
-        // (rad/s) the portion of the motors' rotation that goes towards spinning the axle of the wheel (translation)
-        double motorSpinSpeed = spinSpeed * RobotConstants.DRIVE_GEAR_RATIO;
-        // one motor will spin at motorSteerSpeed + motorSpinSpeed, the other will spin at motorSteerSpeed - motorSpinSpeed because math
-        // if the speeds will be too fast for the motors, scale down
-        if (Math.abs(motorSteerSpeed) + Math.abs(motorSpinSpeed) > MAX_MOTOR_SPEED) {
-            double scaleDown = MAX_MOTOR_SPEED / (Math.abs(motorSteerSpeed) + Math.abs(motorSpinSpeed));
-            motorSteerSpeed *= scaleDown;
-            motorSpinSpeed *= scaleDown;
-        }
+    //Flips between robot and field centric
+    public void setDrivingStyle(boolean toRobotCentric) {
+        isRobotCentric = toRobotCentric;
     }
-    */
+
 
     //this method updates the target vector for the module based on input from auto/teleop program
     public void updateTarget(Vector2d transVec, double rotMag) { //translation vector and rotation magnitude
