@@ -87,13 +87,13 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
          *
          * Left stick button: reset lift
          */
-        loopStartTime = System.currentTimeMillis();
 
-        mathTime = (loopStartTime - startTime) / 1000;
         telemetry.addData("OS loop time: ", loopEndTime - loopStartTime);
 
-        joystick1 = new Vector2d(Math.cos(mathTime), Math.sin(mathTime)); //LEFT joystick
-        joystick2 = new Vector2d(gamepad1.right_stick_x, -gamepad1.right_stick_y); //RIGHT joystick
+        //code to get joystick readings
+        joystick1 = new Vector2d(gamepad1.left_stick_x, -gamepad1.left_stick_y); //LEFT joystick
+        joystick2 = new Vector2d(gamepad1.right_stick_x+((gamepad1.right_stick_x/Math.abs(gamepad1.right_stick_x))*0.1), -gamepad1.right_stick_y); //RIGHT joystick
+        slowModeDrive = false;
 
 
 
@@ -105,6 +105,15 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
         telemetry.addData("StartTime: ", startTime);
         telemetry.addData("MathTime: ", mathTime);
 
+
+        //slow mode/range stuffs
+        if (gamepad1.left_trigger > 0.1) {
+            // joystick1 = joystick1.scale(0.3);
+            // joystick2 = joystick2.scale(0.4); //was 0.3
+            joystick1 = joystick1.scale((1-Math.abs(gamepad1.left_trigger))*.75);
+            joystick2 = joystick2.scale(1-Math.abs(gamepad1.left_trigger));
+            slowModeDrive = true;
+        }
 
         if (usePIDforMovement) {
             if (joystick1.getMagnitude() >= .1 && joystick2.getMagnitude() <= .1) {
