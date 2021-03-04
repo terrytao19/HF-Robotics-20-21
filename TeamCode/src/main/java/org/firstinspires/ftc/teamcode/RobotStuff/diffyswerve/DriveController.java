@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.Misc.DataLogger;
 
 import Dashboard.RobotConstants;
-
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import static org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.DriveModule.RotateModuleMode.DO_NOT_ROTATE_MODULES;
 import static org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.DriveModule.RotateModuleMode.ROTATE_MODULES;
 
@@ -76,6 +76,21 @@ public class DriveController {
 
         robotPosition = startingPosition;
 
+        if (debuggingMode) {
+            dataLogger = new DataLogger("Drive Controller");
+            dataLogger.addField("X Position");
+            dataLogger.addField("Y Position");
+            dataLogger.addField("X Power");
+            dataLogger.addField("Y Power");
+            dataLogger.addField("Rotation Power");
+            dataLogger.addField("Translation Direction X");
+            dataLogger.addField("Translation Direction Y");
+            dataLogger.addField("Rotation Direction");
+            dataLogger.addField("Translation Vector X");
+            dataLogger.addField("Translation Vector Y");
+            dataLogger.newLine();
+        }
+
 
     }
     //defaults to debugging mode off, starting position of 0, 0
@@ -123,9 +138,10 @@ public class DriveController {
     }
     public void drive(Vector2d direction, double cmDistance, double speed, boolean fixModules, boolean alignModules, LinearOpMode linearOpMode) {
         cmDistance = cmDistance; //BAD :(
+
+        double startTime = System.currentTimeMillis();
         double initalSpeed = speed;
 
-        alignModules = true;
 
         //turns modules to correct positions for straight driving
         if (alignModules)
@@ -247,7 +263,7 @@ public class DriveController {
 
 
 
-    public void rotateRobot (Angle targetAngle, LinearOpMode linearOpMode) {
+    public void rotateRobot(Angle targetAngle, LinearOpMode linearOpMode) {
         double startTime = System.currentTimeMillis();
         rotateModules(Vector2d.FORWARD, false, DEFAULT_TIMEOUT_ROT_MODULES, linearOpMode);
         //rotateModules
@@ -271,6 +287,7 @@ public class DriveController {
         }
         update(Vector2d.ZERO, 0);
     }
+
     //both modules must be within allowed error for method to return
     public void rotateModules(Vector2d direction, boolean fieldCentric, double timemoutMS, LinearOpMode linearOpMode) {
         //TODO: check if this will work with reversed modules

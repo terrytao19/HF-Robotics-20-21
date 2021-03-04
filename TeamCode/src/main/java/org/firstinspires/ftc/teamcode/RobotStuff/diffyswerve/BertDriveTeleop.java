@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
+import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.Vector2d;
 import org.firstinspires.ftc.teamcode.Misc.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Misc.PID;
 
@@ -28,9 +28,6 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
 
     double loopStartTime = 0;
     double loopEndTime = 0;
-
-    double startTime = 0;
-    double mathTime = 0;
 
     double imuTarget = 0;
     double error = 0;
@@ -109,7 +106,7 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
         telemetry.addData("Heading to joystick difference: ", joystick2.getAngle().getDifference(robot.getRobotHeading()));
 
         telemetry.addData("Left Orientation: ", robot.driveController.moduleLeft.getCurrentOrientation());
-        telemetry.addData("Right Orientation: ", robot.driveController.moduleRight.getCurrentOrientation());
+        telemetry.addData("Right Orientation: ", robot.driveController.moduleRight.getCurrentOrientation()); 
 
 
 
@@ -171,7 +168,7 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
         return  joystick.getMagnitude() > (slowMode ? DEADBAND_MAG_SLOW_MODE : DEADBAND_MAG_NORMAL) ?
                 joystick : new Vector2d(0, 0);
     }
-    public double PID(double target, double current, double Kp, double Ki, double Kd) {
+    public double pid(double target, double current, double Kp, double Ki, double Kd) {
         error = target-current;
         errorChange = error-lastError;
         errorSum += error;

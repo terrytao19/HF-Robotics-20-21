@@ -19,7 +19,7 @@ public class Robot {
     Telemetry telemetry;
     HardwareMap hardwareMap;
     BNO055IMU imu;
-    DriveController driveController;
+   public DriveController driveController;
     ElapsedTime time = new ElapsedTime();
     OpMode opMode;
 

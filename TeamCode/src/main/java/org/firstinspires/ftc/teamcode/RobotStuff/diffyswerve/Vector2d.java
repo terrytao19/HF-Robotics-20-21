@@ -5,7 +5,7 @@ public class Vector2d {
 
 
         //Vector constants
-        final static Vector2d FORWARD = new Vector2d(0, 1),
+        public final static Vector2d FORWARD = new Vector2d(0, 1),
                 BACKWARD = new Vector2d(0, -1),
                 LEFT = new Vector2d(-1, 0),
                 RIGHT = new Vector2d(1, 0),
@@ -54,20 +54,7 @@ public class Vector2d {
             }
         }
 
-//    public Angle getAngle () {
-//        return new Angle(Math.toDegrees(Math.atan2(y, x)), Angle.AngleType.NEG_180_TO_180_CARTESIAN);
-//    }
 
-//    //returns in degrees, in NEG_180_TO_180_CARTESIAN type
-//    public double getAngle() {
-//        //don't know why all this is needed, but it works
-//        double angRad = Math.atan2(y, -x); //returns from -180 to 180 //-y for TESTING ONLY
-//        Angle angHeading = new Angle(Math.toDegrees(angRad), Angle.AngleType.NEG_180_TO_180_HEADING);
-//        return angHeading.convertAngle(Angle.AngleType.NEG_180_TO_180_CARTESIAN).getAngle();
-//
-//        //the thing that should work in theory but doesn't:
-//        //return Math.toDegrees(Math.atan2(y, x));
-//    }
 
         //returns Angle object
         public Angle getAngle() {
