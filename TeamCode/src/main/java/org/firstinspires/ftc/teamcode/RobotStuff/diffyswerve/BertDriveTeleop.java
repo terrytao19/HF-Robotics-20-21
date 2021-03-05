@@ -86,6 +86,7 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
          */
 
         loopStartTime = System.currentTimeMillis();
+        robot.updateBulkData(); //read data once per loop, access it through robot class variable
 
         telemetry.addData("OS loop time: ", loopEndTime - loopStartTime);
 

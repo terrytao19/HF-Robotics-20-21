@@ -20,4 +20,5 @@ repositories {
 
 dependencies {
     implementation 'com.arcrobotics:ftclib:1.1.6' // core
+    implementation 'org.openftc:rev-extensions-2:1.2'
 }

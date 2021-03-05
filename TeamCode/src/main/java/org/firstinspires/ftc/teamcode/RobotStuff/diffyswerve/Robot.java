@@ -11,6 +11,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.Misc.DataLogger;
+import org.openftc.revextensions2.ExpansionHubEx;
+import org.openftc.revextensions2.RevBulkData;
+
 //Has all of the hardware for the robot
 public class Robot {
 
@@ -23,6 +26,12 @@ public class Robot {
     ElapsedTime time = new ElapsedTime();
     OpMode opMode;
 
+    //BULK DATA (RevExtensions2)
+    public RevBulkData bulkData1;
+    public RevBulkData bulkData2;
+
+    ExpansionHubEx expansionHub1;
+
 
 
     public Robot(OpMode opMode, Position startingPosition, boolean isAuto, boolean debuggingMode) {
@@ -31,7 +40,10 @@ public class Robot {
         this.opMode = opMode;
         driveController = new DriveController(this, startingPosition, debuggingMode);
 
-        imu = opMode.hardwareMap.get(BNO055IMU.class, "imu 1");
+        imu = opMode.hardwareMap.get(BNO055IMU.class, "imu");
+
+        expansionHub1 = hardwareMap.get(ExpansionHubEx.class, "Control Hub");
+        bulkData1 = expansionHub1.getBulkInputData();
 
     }
 
@@ -44,6 +56,11 @@ public class Robot {
     public Robot(OpMode opMode, boolean isAuto, boolean debuggingMode) {
         this(opMode, new Position(0, 0, new Angle(0, Angle.AngleType.ZERO_TO_360_HEADING)), isAuto, debuggingMode);
     }
+    public void updateBulkData() {
+        bulkData1 = expansionHub1.getBulkInputData();
+
+    }
+
 
 
     public void initIMU() {

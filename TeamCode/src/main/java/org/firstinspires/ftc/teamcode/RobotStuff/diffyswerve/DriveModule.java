@@ -136,12 +136,7 @@ public class DriveModule {
 
     //this method updates the target vector for the module based on input from auto/teleop program
     public void updateTarget(Vector2d transVec, double rotMag) { //translation vector and rotation magnitude
-        //converts robot heading to the angle type used by Vector2d class
 
-        //converts the translation vector from a robot centric to a field centric one
-
-        //TODO: this disables robot centric
-        //Vector2d transVecFC = isRobotCentric ? transVec : transVec.rotateBy(robot.getRobotHeading().getAngle(Angle.AngleType.ZERO_TO_360_HEADING), Angle.Direction.COUNTER_CLOCKWISE);
 
         Vector2d transVecFC = transVec.rotateBy(robot.getRobotHeading().getAngle(Angle.AngleType.ZERO_TO_360_HEADING), Angle.Direction.COUNTER_CLOCKWISE);
 
@@ -167,7 +162,7 @@ public class DriveModule {
             dataLogger.addField(rotVec.getY());
             dataLogger.addField(targetVector.getX());
             dataLogger.addField(targetVector.getY());
-         //   dataLogger.addField(getCurrentOrientation().getAngle());
+            dataLogger.addField(getCurrentOrientation().getAngle());
             dataLogger.addField(reversed);
         }
 
@@ -187,8 +182,20 @@ public class DriveModule {
         double rotMag = getRotMag(targetHeading, robotHeading) * scaleFactor;
         updateTarget(transVec, rotMag);
     }
+    public double getRotMag(Angle targetHeading, Angle robotHeading) {
+        robot.telemetry.addData("Difference between joystick and robot", targetHeading.getDifference(robotHeading));
+        robot.telemetry.addData("Direction from robot to joystick", robotHeading.directionTo(targetHeading));
+        double unsignedDifference = RobotUtil.scaleVal(targetHeading.getDifference(robotHeading),15, 60, .3, 1);
+        //todo: check if below line is causing problem
+        if (robotHeading.directionTo(targetHeading) == Angle.Direction.CLOCKWISE) {
+            return unsignedDifference * -1;
+        } else {
+            return unsignedDifference;
+        }
+    }
+
     //sets motor powers for robot to best approach given target vector
-    public void goToTarget(Vector2d targetVector, int directionMultiplier) {
+    public void goToTarget (Vector2d targetVector, int directionMultiplier) {
         //how much the module needs to translate (and in which direction)
         double moveComponent = targetVector.getMagnitude() * directionMultiplier;
 
@@ -196,10 +203,7 @@ public class DriveModule {
         double pivotComponent;
         if (targetVector.getMagnitude() != 0) {
             pivotComponent = getPivotComponent(targetVector, getCurrentOrientation());
-
-        }
-
-        else {
+        } else {
             //if target vector is zero (joystick is within deadband) don't pivot modules
             pivotComponent = 0;
         }
@@ -212,6 +216,7 @@ public class DriveModule {
             dataLogger.addField(powerVector.getY());
         }
 
+        setMotorPowers(powerVector);
 
         if (debuggingMode) {
             robot.telemetry.addData(moduleSide + " Target Vector Angle: ", targetVector.getAngleDouble(Angle.AngleType.ZERO_TO_360_HEADING));
@@ -219,6 +224,11 @@ public class DriveModule {
             robot.telemetry.addData(moduleSide + " Current orientation: ", getCurrentOrientation().getAngle());
         }
 
+        if (debuggingMode) {
+            dataLogger.addField(robot.bulkData1.getMotorCurrentPosition(motor1));
+            dataLogger.addField(robot.bulkData1.getMotorCurrentPosition(motor2));
+            dataLogger.newLine();
+        }
     }
     //returns a scalar corresponding to how much power the module needs to apply to rotating
     //this is necessary because of the differential nature of a diff swerve drive
@@ -308,8 +318,11 @@ public class DriveModule {
             powerVector = new Vector2d(0, getPivotComponent(direction, getCurrentOrientation())); //order important here
         }
         setMotorPowers(powerVector);
-        robot.telemetry.addData(moduleSide + " Power Vector: ", powerVector);
-        robot.telemetry.addData(moduleSide + " Current orientation: ", getCurrentOrientation().getAngle());
+
+        if(debuggingMode) {
+            robot.telemetry.addData(moduleSide + " Power Vector: ", powerVector);
+            robot.telemetry.addData(moduleSide + " Current orientation: ", getCurrentOrientation().getAngle());
+        }
     }
     //TRACKING METHODS
     //used for straight line distance tracking
@@ -339,17 +352,7 @@ public class DriveModule {
         return new Angle(rawAngle, Angle.AngleType.ZERO_TO_360_HEADING);
     }
 
-    public double getRotMag(Angle targetHeading, Angle robotHeading) {
-        robot.telemetry.addData("Difference between joystick and robot", targetHeading.getDifference(robotHeading));
-        robot.telemetry.addData("Direction from robot to joystick", robotHeading.directionTo(targetHeading));
-        double unsignedDifference = RobotUtil.scaleVal(targetHeading.getDifference(robotHeading),15, 60, .3, 1);
-        //todo: check if below line is causing problem
-        if (robotHeading.directionTo(targetHeading) == Angle.Direction.CLOCKWISE) {
-            return unsignedDifference * -1;
-        } else {
-            return unsignedDifference;
-        }
-    }
+
 
     //does not need to be called at the start of every program
     //separate Opmode called ResetEncoders calls this method
