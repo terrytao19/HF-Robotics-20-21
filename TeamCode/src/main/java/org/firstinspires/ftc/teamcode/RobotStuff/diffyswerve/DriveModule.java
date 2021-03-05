@@ -89,7 +89,7 @@ public class DriveModule {
         } else {
             motor1 = robot.hardwareMap.dcMotor.get("leftTopMotor");
             motor2 = robot.hardwareMap.dcMotor.get("leftBottomMotor");
-            motor1.setDirection(DcMotorSimple.Direction.REVERSE);
+            motor1.setDirection(DcMotorSimple.Direction.FORWARD);
             positionVector = new Vector2d((double) -18 / 2, 0); //points from robot center to left module
         }
         lastThrougBoreEncoder = 0;
