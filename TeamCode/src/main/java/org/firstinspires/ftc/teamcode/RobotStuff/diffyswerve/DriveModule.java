@@ -40,7 +40,7 @@ public class DriveModule {
     public static final double CM_WHEEL_DIAMETER = 3 * 2.54;
     public static final double CM_PER_WHEEL_REV = CM_WHEEL_DIAMETER * Math.PI;
     public final double CM_PER_TICK = CM_PER_WHEEL_REV/TICKS_PER_WHEEL_REV;
-    public final double MAX_MOTOR_POWER = .75;
+    public final double MAX_MOTOR_POWER = .5;
     public static final double TICKS_PER_CM = (TICKS_PER_MODULE_REV) / (CM_WHEEL_DIAMETER * Math.PI);
     public static final double DEGREES_PER_TICK = 360/TICKS_PER_MODULE_REV;
 
@@ -50,7 +50,7 @@ public class DriveModule {
 
 
     //used for scaling pivot component (see getPivotComponent() method)
-    public final double ANGLE_OF_MAX_MODULE_ROTATION_POWER = 60;
+    public final double ANGLE_OF_MAX_MODULE_ROTATION_POWER = 80;
 
     //if module is within this number of degrees from its target orientation, no pivot power will be applied
     public final double ALLOWED_MODULE_ORIENTATION_ERROR = 10;
@@ -149,10 +149,10 @@ public class DriveModule {
 
         //allows modules to reverse power instead of rotating 180 degrees
         //example: useful when going from driving forwards to driving backwards
-        int directionMultiplier = -1; //was positive 1
+        int directionMultiplier = 1; //was positive 1
         if (reversed) { //reverse direction of translation because module is reversed
             targetVector = targetVector.reflect();
-            directionMultiplier = 1;
+            directionMultiplier = -1;
         }
 
         if (debuggingMode) {

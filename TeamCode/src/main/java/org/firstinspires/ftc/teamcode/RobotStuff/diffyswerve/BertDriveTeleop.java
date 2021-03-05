@@ -146,6 +146,16 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
         } else if (gamepad1.dpad_right) {
             robot.driveController.setDrivingStyle(false);
         }
+
+        if (gamepad1.b) {
+          robot.driveController.moduleRight.ROT_ADVANTAGE += 0.01;
+          robot.driveController.moduleLeft.ROT_ADVANTAGE += 0.01;
+      }
+       if (gamepad1.x) {
+          robot.driveController.moduleRight.ROT_ADVANTAGE -= 0.01;
+           robot.driveController.moduleLeft.ROT_ADVANTAGE -= 0.01;
+       }
+
         telemetry.addData("ROT_ADVANTAGE: ", robot.driveController.moduleLeft.ROT_ADVANTAGE);
 
 
