@@ -84,7 +84,7 @@ public class DriveModule {
         if (moduleSide == ModuleSide.RIGHT) {
             motor1 = robot.hardwareMap.dcMotor.get("rightTopMotor");
             motor2 = robot.hardwareMap.dcMotor.get("rightBottomMotor");
-            motor1.setDirection(DcMotorSimple.Direction.REVERSE);
+            motor1.setDirection(DcMotorSimple.Direction.FORWARD);
             positionVector = new Vector2d((double) 18 / 2, 0); //points from robot center to right module
         } else {
             motor1 = robot.hardwareMap.dcMotor.get("leftTopMotor");
