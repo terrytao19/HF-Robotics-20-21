@@ -61,8 +61,8 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
         if (willResetIMU) robot.initIMU();
 
         pidDrive.setSetpoint(imuTarget);
-        pidDrive.setOutputRange(1, -1);
-        pidDrive.setInputRange(180, -180);
+        pidDrive.setOutputRange(-1, 1);
+        pidDrive.setInputRange(-180, 180);
         pidDrive.enable();
         imuTarget = robot.getRobotHeading().getAngle();
     }
