@@ -34,7 +34,7 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
     double lastError = 0;
     double errorSum = 0;
     double errorChange = 0;
-    boolean usePIDforMovement = true;
+    boolean usePIDforMovement = false;
 
     PID pidDrive = new PID(15, 2, 3);
 
@@ -42,6 +42,9 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
 
     double lastTime;
 // yeetr
+
+    private boolean slow = false;
+
     public void init() {
         robot = new Robot(this, false, false);
     }
@@ -58,8 +61,8 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
         if (willResetIMU) robot.initIMU();
 
         pidDrive.setSetpoint(imuTarget);
-        pidDrive.setOutputRange(-1, 1);
-        pidDrive.setInputRange(-180, 180);
+        pidDrive.setOutputRange(1, -1);
+        pidDrive.setInputRange(180, -180);
         pidDrive.enable();
         imuTarget = robot.getRobotHeading().getAngle();
     }
@@ -90,6 +93,7 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
 
         telemetry.addData("OS loop time: ", loopEndTime - loopStartTime);
 
+        //robot.driveController.updatePositionTracking(telemetry);
         //code to get joystick readings
 
 

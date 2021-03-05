@@ -39,7 +39,7 @@ public class DriveController {
     final double WHEEL_TO_WHEEL_CM = 32.5; //in cm (was 18*2.54)
 
     //tolerance for module rotation (in degrees)
-    public final double ALLOWED_MODULE_ROT_ERROR = 5;
+    public final double ALLOWED_MODULE_ROT_ERROR = 15;
 
     //tolerance for robot rotation (in degrees)
     public final double ALLOWED_ROBOT_ROT_ERROR = 5; //was 3
@@ -53,6 +53,7 @@ public class DriveController {
     //minimum drive power (ever)
     //TODO: actually set this to minimum possible power
     double MIN_DRIVE_POWER = 0.3;
+    public double MAX_MOTOR_POWER = .75; //was 0.7
 
     //will multiply the input from the rotation joystick (max value of 1) by this factor
     public final double ROBOT_ROTATION_SCALE_FACTOR = 0.7;

@@ -40,7 +40,7 @@ public class DriveModule {
     public static final double CM_WHEEL_DIAMETER = 3 * 2.54;
     public static final double CM_PER_WHEEL_REV = CM_WHEEL_DIAMETER * Math.PI;
     public final double CM_PER_TICK = CM_PER_WHEEL_REV/TICKS_PER_WHEEL_REV;
-    public final double MAX_MOTOR_POWER = 1;
+    public final double MAX_MOTOR_POWER = .75;
     public static final double TICKS_PER_CM = (TICKS_PER_MODULE_REV) / (CM_WHEEL_DIAMETER * Math.PI);
     public static final double DEGREES_PER_TICK = 360/TICKS_PER_MODULE_REV;
 
@@ -48,12 +48,12 @@ public class DriveModule {
     public Vector2d MOTOR_1_VECTOR = new Vector2d(1 / Math.sqrt(2), 1 / Math.sqrt(2)); //unit vector (MAY BE SWITCHED with below)
     public Vector2d MOTOR_2_VECTOR = new Vector2d(-1 / Math.sqrt(2), 1 / Math.sqrt(2)); //unit vector
 
-    public double MAX_MOTOR_SPEED = 1.0;//setting to 1 may increase robot top speed, but may decrease accuracy
+
     //used for scaling pivot component (see getPivotComponent() method)
     public final double ANGLE_OF_MAX_MODULE_ROTATION_POWER = 60;
 
     //if module is within this number of degrees from its target orientation, no pivot power will be applied
-    public final double ALLOWED_MODULE_ORIENTATION_ERROR = 5;
+    public final double ALLOWED_MODULE_ORIENTATION_ERROR = 10;
 
     //TODO: tune this variable (see commented out section in TeleOp)
     //was 1.7
@@ -84,12 +84,12 @@ public class DriveModule {
         if (moduleSide == ModuleSide.RIGHT) {
             motor1 = robot.hardwareMap.dcMotor.get("rightTopMotor");
             motor2 = robot.hardwareMap.dcMotor.get("rightBottomMotor");
-            motor1.setDirection(DcMotorSimple.Direction.FORWARD);
+            motor1.setDirection(DcMotorSimple.Direction.REVERSE);
             positionVector = new Vector2d((double) 18 / 2, 0); //points from robot center to right module
         } else {
             motor1 = robot.hardwareMap.dcMotor.get("leftTopMotor");
             motor2 = robot.hardwareMap.dcMotor.get("leftBottomMotor");
-            motor1.setDirection(DcMotorSimple.Direction.FORWARD);
+            motor1.setDirection(DcMotorSimple.Direction.REVERSE);
             positionVector = new Vector2d((double) -18 / 2, 0); //points from robot center to left module
         }
         lastThrougBoreEncoder = 0;
