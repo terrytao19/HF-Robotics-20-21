@@ -149,10 +149,10 @@ public class DriveModule {
 
         //allows modules to reverse power instead of rotating 180 degrees
         //example: useful when going from driving forwards to driving backwards
-        int directionMultiplier = 1; //was positive 1
+        int directionMultiplier = -1; //was positive 1
         if (reversed) { //reverse direction of translation because module is reversed
             targetVector = targetVector.reflect();
-            directionMultiplier = -1;
+            directionMultiplier = 1;
         }
 
         if (debuggingMode) {
