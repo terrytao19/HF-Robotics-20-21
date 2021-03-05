@@ -34,7 +34,7 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
     double lastError = 0;
     double errorSum = 0;
     double errorChange = 0;
-    boolean usePIDforMovement = false;
+    boolean usePIDforMovement = true;
 
     PID pidDrive = new PID(15, 2, 3);
 

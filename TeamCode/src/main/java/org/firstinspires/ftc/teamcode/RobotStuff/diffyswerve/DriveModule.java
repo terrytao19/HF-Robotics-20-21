@@ -21,6 +21,8 @@ public class DriveModule {
 
     public DcMotor motor1; //top motor
     public DcMotor motor2; //bottom motor
+    public DcMotor encoderOrientation;
+
 
     //Through Bore encoders
     // They are in motor 1 and motor 4 slots so set motors to run without using encoders
@@ -40,9 +42,13 @@ public class DriveModule {
     public static final double CM_WHEEL_DIAMETER = 3 * 2.54;
     public static final double CM_PER_WHEEL_REV = CM_WHEEL_DIAMETER * Math.PI;
     public final double CM_PER_TICK = CM_PER_WHEEL_REV/TICKS_PER_WHEEL_REV;
-    public final double MAX_MOTOR_POWER = .75;
+    public final double MAX_MOTOR_POWER = 1;
     public static final double TICKS_PER_CM = (TICKS_PER_MODULE_REV) / (CM_WHEEL_DIAMETER * Math.PI);
     public static final double DEGREES_PER_TICK = 360/TICKS_PER_MODULE_REV;
+
+    public final double TICKS_PER_MODULE_REV_ORIENT = 8192; //20 * (double)(60)/14 * (double)(48)/15 * (double)(82)/22; //ticks per MODULE revolution
+    public final double DEGREES_PER_TICK_ORIENT = 360/TICKS_PER_MODULE_REV_ORIENT;
+
 
     // Unit vectors represent rot power v translation power coordinate system
     public Vector2d MOTOR_1_VECTOR = new Vector2d(1 / Math.sqrt(2), 1 / Math.sqrt(2)); //unit vector (MAY BE SWITCHED with below)
@@ -347,10 +353,28 @@ public class DriveModule {
 
     //returns module orientation relative to ROBOT (not field) in degrees and NEG_180_TO_180_HEADING type(fix this for new encoder Through bore
     public Angle getCurrentOrientation() {
-        robot.telemetry.addData(moduleSide + "RightModuleEncoder", motor1.getCurrentPosition());
-        double rawAngle = (double)(motor1.getCurrentPosition())* DEGREES_PER_TICK; //motor2-motor1 makes ccw positive (?)
-        return new Angle(rawAngle, Angle.AngleType.ZERO_TO_360_HEADING);
-    }
+        //returns module orientation relative to ROBOT (not field) in degrees and NEG_180_TO_180_HEADING type
+            //double rawAngle = (double)(360/8192) * (double)robot.bulkData2.getMotorCurrentPosition(encoderOrientation);
+
+        /*robot.telemetry.addData(moduleSide + "Orientation Encoder", robot.bulkData2.getMotorCurrentPosition(encoderOrientation));
+        double rawAngle = (double)(robot.bulkData2.getMotorCurrentPosition(encoderOrientation)) * DEGREES_PER_TICK_ORIENT *1; //motor2-motor1 makes ccw positive (?)
+        return new Angle(rawAngle, Angle.AngleType.ZERO_TO_360_HEADING);*/
+            double rawAngleORIENT = (double)(robot.bulkData2.getMotorCurrentPosition(encoderOrientation)) * DEGREES_PER_TICK_ORIENT;
+            Angle rawAngleORIENTAngle = new Angle(rawAngleORIENT, Angle.AngleType.ZERO_TO_360_HEADING);
+
+
+            robot.telemetry.addData(moduleSide + "Motor 1 Encoder", robot.bulkData1.getMotorCurrentPosition(motor1));
+            robot.telemetry.addData(moduleSide + "Motor 2 Encoder", robot.bulkData1.getMotorCurrentPosition(motor2));
+            robot.telemetry.addData(moduleSide + "Angle Orient ", rawAngleORIENTAngle);
+            robot.telemetry.addData(moduleSide + "Raw Angle Orient ", rawAngleORIENT);
+            double rawAngle = (double)(robot.bulkData1.getMotorCurrentPosition(motor2) + robot.bulkData1.getMotorCurrentPosition(motor1))/2.0 * DEGREES_PER_TICK; //motor2-motor1 makes ccw positive (?)
+            robot.telemetry.addData(moduleSide + "Raw Angle  ", rawAngle);
+            Angle rawAngleAngle = new Angle(rawAngle, Angle.AngleType.ZERO_TO_360_HEADING);
+            robot.telemetry.addData(moduleSide + "Raw Angle Angle ", rawAngleAngle);
+            return new Angle(rawAngleORIENT, Angle.AngleType.ZERO_TO_360_HEADING);
+
+        }
+
 
 
 
