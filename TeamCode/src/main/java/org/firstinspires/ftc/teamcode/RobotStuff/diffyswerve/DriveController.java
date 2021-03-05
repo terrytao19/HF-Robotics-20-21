@@ -143,6 +143,7 @@ public class DriveController {
 
         double startTime = System.currentTimeMillis();
         double initalSpeed = speed;
+        alignModules = true;
 
 
         //turns modules to correct positions for straight driving
@@ -352,6 +353,7 @@ public class DriveController {
     public double getDistanceTraveled() {
         return Math.abs(robotDistanceTraveled);
     }
+
     public void resetEncoders() {
         moduleRight.resetEncoders();
         moduleLeft.resetEncoders();
