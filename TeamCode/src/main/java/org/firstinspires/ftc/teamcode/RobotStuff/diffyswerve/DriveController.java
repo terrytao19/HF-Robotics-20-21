@@ -36,7 +36,9 @@ public class DriveController {
     double moduleLeftLastDistance;
     double moduleRightLastDistance;
 
-    final double WHEEL_TO_WHEEL_CM = 32.5; //in cm (was 18*2.54)
+    final double WHEEL_TO_WHEEL_CM = 33.02; //in cm (13 inches last Time I checked)
+
+
 
     //tolerance for module rotation (in degrees)
     public final double ALLOWED_MODULE_ROT_ERROR = 15;
@@ -60,6 +62,11 @@ public class DriveController {
     public final double ROBOT_ROTATION_WHILE_TRANS_SCALE_FACTOR = 0.2;
     public final double ROBOT_ROTATION_SCALE_FACTOR_ABS = 1;
     public final double ROBOT_ROTATION_WHILE_TRANS_SCALE_FACTOR_ABS = 1;
+
+    ///Drive to position Constants
+    //todo: tune constant
+    double MAX_AUTO_ROTATE_FACTOR = 0.3; //was 0.5
+
 
 
     //default timeouts
@@ -123,6 +130,7 @@ public class DriveController {
 
     //should be called every loop cycle when driving (auto or TeleOp)
     //note: positive rotationMagnitude is CCW rotation
+    //this method is for "power-based rotation mode"
     public void update(Vector2d translationVector, double rotationMagnitude) {
         robot.updateBulkData();
         moduleLeft.updateTarget(translationVector, rotationMagnitude);
@@ -141,7 +149,7 @@ public class DriveController {
     public void drive(Vector2d direction, double cmDistance, double speed, boolean fixModules, boolean alignModules, LinearOpMode linearOpMode) {
         cmDistance = cmDistance; //BAD :(
 
-        double startTime = System.currentTimeMillis();
+
         double initalSpeed = speed;
         alignModules = true;
 
@@ -174,6 +182,7 @@ public class DriveController {
             linearOpMode.telemetry.addData("CM Distance", cmDistance);
 
             linearOpMode.telemetry.update();
+            updatePositionTracking(robot.telemetry); //update position tracking
 
 
         }
@@ -258,6 +267,57 @@ public class DriveController {
         update(Vector2d.ZERO, 0);
         setRotateModuleMode(ROTATE_MODULES); //reset mode
     }
+    //position tracking drive method
+    public void driveToPosition(Position targetPosition, boolean isBlue, LinearOpMode linearOpMode) {
+        double totalTravelDistance = robotPosition.getVectorTo(targetPosition).getMagnitude();
+        double totalHeadingDifference = robotPosition.getAbsHeadingDifference(targetPosition);
+
+        do {
+            //scale speeds based on remaining distance from target, bounded by 0 and original distance
+            //at the very beginning, x & y trans and rot will be max speed (different for each)
+            //at the end, all three speeds will be min speed (different for each)
+            //in between, the speeds will scale linearly depending on distance from target position
+            robot.updateBulkData();
+            //updateSLAMNav();
+            updatePositionTracking(linearOpMode.telemetry);
+
+            Vector2d translationDirection = robotPosition.getDirectionTo(targetPosition);
+            Angle.Direction rotationDirection = robotPosition.getRotationDirectionTo(targetPosition);
+
+            double rotationPower = RobotUtil.scaleVal(robotPosition.getAbsHeadingDifference(targetPosition),
+                    0, totalHeadingDifference, 0, MAX_AUTO_ROTATE_FACTOR);
+
+            if (robotPosition.getRotationDirectionTo(targetPosition) == Angle.Direction.CLOCKWISE) {
+                rotationPower *= -1; //todo: check sign
+            }
+
+            double distanceRemaining = robotPosition.getVectorTo(targetPosition).getMagnitude();
+            double translationScaleFactor = RobotUtil.scaleVal(distanceRemaining, 0, totalTravelDistance, 0, 1); //min output was 0.1
+            Vector2d translationVector = translationDirection.scale(translationScaleFactor);
+            if (isBlue) translationVector = translationVector.reflect();
+
+            update(translationVector, rotationPower);
+
+            if (debuggingMode) {
+                dataLogger.addField(robotPosition.x);
+                dataLogger.addField(robotPosition.y);
+                dataLogger.addField(rotationPower);
+                dataLogger.addField(translationDirection.getX());
+                dataLogger.addField(translationDirection.getY());
+                dataLogger.addField(rotationDirection.toString());
+                dataLogger.addField(translationVector.getX());
+                dataLogger.addField(translationVector.getY());
+                dataLogger.newLine();
+
+                linearOpMode.telemetry.addData("Distance remaining", distanceRemaining);
+                linearOpMode.telemetry.addData("Translation direction", translationDirection);
+                linearOpMode.telemetry.addData("Translation vector", translationVector);
+                linearOpMode.telemetry.update();
+            }
+        } while (!targetPosition.withinRange(robotPosition, 5, 5, 5) && linearOpMode.opModeIsActive());
+
+        update(Vector2d.ZERO, 0);
+    }
 
     //Flips between robot and field centric
     public void setDrivingStyle(boolean toRobotCentric) {
@@ -278,7 +338,7 @@ public class DriveController {
         double absHeadingDiff = robot.getRobotHeading().getDifference(targetAngle);
         while (absHeadingDiff > ALLOWED_MODULE_ROT_ERROR && linearOpMode.opModeIsActive() && iterations < MAX_ITERATIONS_ROBOT_ROTATE /*&& System.currentTimeMillis() - startTime < ROTATE_ROBOT_TIMEOUT*/) {
             robot.updateBulkData();
-            //updateSLAMNav();
+
             absHeadingDiff = robot.getRobotHeading().getDifference(targetAngle);
             double rotMag = RobotUtil.scaleVal(absHeadingDiff, 0, 25, 0, power); //was max power 1 - WAS 0.4 max power
 
@@ -305,7 +365,7 @@ public class DriveController {
         double startTime = System.currentTimeMillis();
         do {
             robot.updateBulkData();
-            //updateSLAMNav();
+
             updateTracking();
             moduleLeftDifference = moduleLeft.getCurrentOrientation().getDifference(direction.getAngle()); //was getRealAngle() (don't ask)
             moduleRightDifference = moduleRight.getCurrentOrientation().getDifference(direction.getAngle());
@@ -317,16 +377,43 @@ public class DriveController {
             linearOpMode.telemetry.addData("Top level module left difference", moduleLeftDifference);
             linearOpMode.telemetry.addData("Top level module right difference", moduleRightDifference);
             linearOpMode.telemetry.update();
-           // updatePositionTracking(robot.telemetry); //update position tracking
+           updatePositionTracking(robot.telemetry); //update position tracking
         } while ((moduleLeftDifference > ALLOWED_MODULE_ROT_ERROR || moduleRightDifference > ALLOWED_MODULE_ROT_ERROR) && linearOpMode.opModeIsActive() && System.currentTimeMillis() < startTime + timemoutMS);
         update(Vector2d.ZERO, 0);
     }
+    public void updatePositionTracking(Telemetry telemetry) {
+        Vector2d rightDisp = moduleRight.updatePositionTracking(telemetry);
+        Vector2d leftDisp = moduleLeft.updatePositionTracking(telemetry);
+
+        //orientation tracking with encoders
+        double arcLength = moduleRight.positionChange - moduleLeft.positionChange;
+        double angleChange = arcLength * 360 / 2.0 / Math.PI / WHEEL_TO_WHEEL_CM;
+        robotPosition.incrementHeading(angleChange);
+
+        rightDisp.setX(rightDisp.getX() + WHEEL_TO_WHEEL_CM / 2);
+        leftDisp.setX(leftDisp.getX() - WHEEL_TO_WHEEL_CM / 2);
+
+        Vector2d robotCenterDisp = new Vector2d((rightDisp.getX() + leftDisp.getX()) / 2, (rightDisp.getY() + leftDisp.getY()) / 2);
+        robotCenterDisp = robotCenterDisp.rotateBy(robotPosition.heading.getAngle(Angle.AngleType.ZERO_TO_360_HEADING), Angle.Direction.CLOCKWISE); //make field centric using previous heading
+        robotPosition.incrementX(robotCenterDisp.getX());
+        robotPosition.incrementY(robotCenterDisp.getY());
+
+        telemetry.addData("Robot X Position: ", robotPosition.x);
+        telemetry.addData("Robot Y Position: ", robotPosition.y);
+        telemetry.addData("Robot Abs Heading: ", robotPosition.heading);
+
+    }
+
+
     public void resetDistanceTraveled() {
         previousRobotDistanceTraveled = robotDistanceTraveled;
         robotDistanceTraveled = 0;
 
         moduleRight.resetDistanceTraveled();
         moduleLeft.resetDistanceTraveled();
+
+        moduleLeftLastDistance = moduleLeft.getDistanceTraveled();
+        moduleRightLastDistance = moduleRight.getDistanceTraveled();
     }
 
 
@@ -343,15 +430,16 @@ public class DriveController {
         moduleRightLastDistance = moduleRight.getDistanceTraveled();
     }
 
-    public void setRotateModuleMode(DriveModule.RotateModuleMode rotateModuleMode) {
-        moduleLeft.rotateModuleMode = rotateModuleMode;
-        moduleRight.rotateModuleMode = rotateModuleMode;
-    }
 
 
     //note: returns ABSOLUTE VALUE
     public double getDistanceTraveled() {
         return Math.abs(robotDistanceTraveled);
+    }
+
+    public void setRotateModuleMode(DriveModule.RotateModuleMode rotateModuleMode) {
+        moduleLeft.rotateModuleMode = rotateModuleMode;
+        moduleRight.rotateModuleMode = rotateModuleMode;
     }
 
     public void resetEncoders() {

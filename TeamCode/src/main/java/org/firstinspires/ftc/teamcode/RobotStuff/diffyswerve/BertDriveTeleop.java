@@ -4,6 +4,8 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.Vector2d;
 import org.firstinspires.ftc.teamcode.Misc.ButtonToggle;
 import org.firstinspires.ftc.teamcode.Misc.PID;
@@ -41,9 +43,11 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
     boolean absHeadingMode = false;
 
     double lastTime;
-// yeetr
+
 
     private boolean slow = false;
+
+    private ElapsedTime timer = new ElapsedTime();
 
     public void init() {
         robot = new Robot(this, false, false);
@@ -69,27 +73,10 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
 
     public void loop() {
 
-        /**
-         * CONTROLS:
-         *
-         * Left joystick: moving around
-         * Right joystick: turning in place
-         * Right trigger: slow mode
-         *
-         * Right bumper: move intake
-         * Left bumper: reverse intake
-         *
-         * Y: move lift up
-         * A: move lift down
-         *
-         * Dpad up: move lift to the set position above the current one
-         * Dpad down: move lift to the set position below the current one
-         *
-         * Left stick button: reset lift
-         */
 
         loopStartTime = System.currentTimeMillis();
         robot.updateBulkData(); //read data once per loop, access it through robot class variable
+        robot.driveController.updatePositionTracking(telemetry);
 
         telemetry.addData("OS loop time: ", loopEndTime - loopStartTime);
 
@@ -117,8 +104,7 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
 
         //slow mode/range stuffs
         if (gamepad1.left_trigger > 0.1) {
-            // joystick1 = joystick1.scale(0.3);
-            // joystick2 = joystick2.scale(0.4); //was 0.3
+
             joystick1 = joystick1.scale((1-Math.abs(gamepad1.left_trigger))*.75);
             joystick2 = joystick2.scale(1-Math.abs(gamepad1.left_trigger));
             slowModeDrive = true;
@@ -129,7 +115,7 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
                 pidDrive.setSetpoint(imuTarget);
                 //double pidTurn = pidController(imuTarget, robot.getRobotHeading().getAngle(), 2,1,1);
                 double pidTurn = pidDrive.performPID(robot.getRobotHeading().getAngle());
-                joystick2 = new Vector2d(joystick2.getX() - pidTurn, joystick2.getY());
+                joystick2 = new Vector2d(joystick2.getX()-pidTurn, joystick2.getY());
             }
 
 
@@ -139,6 +125,7 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
                 checkDeadband(joystick2, slowModeDrive).scale(Math.sqrt(2)),
                 absHeadingMode
         );
+        //Used for tuning
 
 
         if (gamepad1.dpad_left) {

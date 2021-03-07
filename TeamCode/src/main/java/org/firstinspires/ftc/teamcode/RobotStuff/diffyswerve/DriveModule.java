@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Misc.DataLogger;
 import org.firstinspires.ftc.teamcode.Misc.PID;
 
@@ -27,32 +28,43 @@ public class DriveModule {
     //Through Bore encoders
     // They are in motor 1 and motor 4 slots so set motors to run without using encoders
     private double lastThrougBoreEncoder;
+
   // motor2 encoder will be used to find distance travelled
     private double lastMotor2Encoder;
     private double distanceTraveled;
+
+    private double lastorientEncoder;
+    double lastM1Encoder;
+    double lastM2Encoder;
+
+
 
 
     //used for logic that allows robot to rotate modules as little as possible
     //todo attempt to make the code more elegant
     public boolean takingShortestPath = false;
     public boolean reversed = false;
+
+
     // Used constants used only for drive module
     public static final double TICKS_PER_MODULE_REV = 8192;
-    public static final double TICKS_PER_WHEEL_REV = 537.6;
+    public final double DEGREES_PER_TICK = 360/TICKS_PER_MODULE_REV;
+    public static final double TICKS_PER_WHEEL_REV = 1 * TICKS_PER_MODULE_REV * 18/60; //ticks per WHEEL revolution
+
+
     public static final double CM_WHEEL_DIAMETER = 3 * 2.54;
     public static final double CM_PER_WHEEL_REV = CM_WHEEL_DIAMETER * Math.PI;
     public final double CM_PER_TICK = CM_PER_WHEEL_REV/TICKS_PER_WHEEL_REV;
+
+
     public final double MAX_MOTOR_POWER = 1;
+
+
     public static final double TICKS_PER_CM = (TICKS_PER_MODULE_REV) / (CM_WHEEL_DIAMETER * Math.PI);
-    public static final double DEGREES_PER_TICK = 360/TICKS_PER_MODULE_REV;
+
 
     public final double TICKS_PER_MODULE_REV_ORIENT = 8192; //20 * (double)(60)/14 * (double)(48)/15 * (double)(82)/22; //ticks per MODULE revolution
     public final double DEGREES_PER_TICK_ORIENT = 360/TICKS_PER_MODULE_REV_ORIENT;
-
-
-    // Unit vectors represent rot power v translation power coordinate system
-    public Vector2d MOTOR_1_VECTOR = new Vector2d(1 / Math.sqrt(2), 1 / Math.sqrt(2)); //unit vector (MAY BE SWITCHED with below)
-    public Vector2d MOTOR_2_VECTOR = new Vector2d(-1 / Math.sqrt(2), 1 / Math.sqrt(2)); //unit vector
 
 
     //used for scaling pivot component (see getPivotComponent() method)
@@ -66,6 +78,10 @@ public class DriveModule {
     //what
     public double ROT_ADVANTAGE = 1.7; //max rotation power divided by max translation power (scaling factor)
 
+    // Unit vectors represent rot power v translation power coordinate system
+    public Vector2d MOTOR_1_VECTOR = new Vector2d(1 / Math.sqrt(2), 1 / Math.sqrt(2)); //unit vector (MAY BE SWITCHED with below)
+    public Vector2d MOTOR_2_VECTOR = new Vector2d(-1 / Math.sqrt(2), 1 / Math.sqrt(2)); //unit vector
+
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
     TelemetryPacket packet = new TelemetryPacket();
@@ -78,7 +94,10 @@ public class DriveModule {
     public enum RotateModuleMode {
         DO_NOT_ROTATE_MODULES, ROTATE_MODULES
     }
+
     public RotateModuleMode rotateModuleMode = RotateModuleMode.ROTATE_MODULES;
+
+    public double positionChange;
 
     public boolean isRobotCentric = false;
 
@@ -91,12 +110,12 @@ public class DriveModule {
             motor1 = robot.hardwareMap.dcMotor.get("rightTopMotor");
             motor2 = robot.hardwareMap.dcMotor.get("rightBottomMotor");
             motor1.setDirection(DcMotorSimple.Direction.REVERSE);
-            positionVector = new Vector2d((double) 18 / 2, 0); //points from robot center to right module
+            positionVector = new Vector2d((double) 13 / 2, 0); //points from robot center to right module
         } else {
             motor1 = robot.hardwareMap.dcMotor.get("leftTopMotor");
             motor2 = robot.hardwareMap.dcMotor.get("leftBottomMotor");
             motor1.setDirection(DcMotorSimple.Direction.REVERSE);
-            positionVector = new Vector2d((double) -18 / 2, 0); //points from robot center to left module
+            positionVector = new Vector2d((double) -13 / 2, 0); //points from robot center to left module
         }
         lastThrougBoreEncoder = 0;
 
@@ -109,6 +128,12 @@ public class DriveModule {
         //motors will brake when zero power is applied (rather than coast)
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        lastorientEncoder = 0;
+        lastM1Encoder = 0;
+        lastM2Encoder = 0;
+
+
         if (debuggingMode) {
             dataLogger = new DataLogger(moduleSide + "ModuleLog");
             dataLogger.addField("Trans Vector FC X");
@@ -191,6 +216,7 @@ public class DriveModule {
     public double getRotMag(Angle targetHeading, Angle robotHeading) {
         robot.telemetry.addData("Difference between joystick and robot", targetHeading.getDifference(robotHeading));
         robot.telemetry.addData("Direction from robot to joystick", robotHeading.directionTo(targetHeading));
+
         double unsignedDifference = RobotUtil.scaleVal(targetHeading.getDifference(robotHeading),15, 60, .3, 1);
         //todo: check if below line is causing problem
         if (robotHeading.directionTo(targetHeading) == Angle.Direction.CLOCKWISE) {
@@ -253,7 +279,7 @@ public class DriveModule {
             takingShortestPath = false;
         }
 
-        robot.telemetry.addData(moduleSide + " Angle diff (abs. value): ", angleDiff);
+        if (debuggingMode) robot.telemetry.addData(moduleSide + " Angle diff (abs. value): ", angleDiff);
         Angle.Direction direction = currentAngle.directionTo(targetAngle);
 
         //CCW is negative for heading system
@@ -296,10 +322,17 @@ public class DriveModule {
             motor2power *= -1;
         }
 
-        robot.telemetry.addData(moduleSide + " Motor 1 Power: ", motor1power);
-        robot.telemetry.addData(moduleSide + " Motor 2 Power: ", motor2power);
+        if (debuggingMode) {
+            robot.telemetry.addData(moduleSide + " Motor 1 Power: ", motor1power);
+            robot.telemetry.addData(moduleSide + " Motor 2 Power: ", motor2power);
+        }
         motor1.setPower(motor1power);
         motor2.setPower(motor2power);
+
+        if (debuggingMode) {
+            dataLogger.addField(motor1power);
+            dataLogger.addField(motor2power);
+        }
     }
     //for pure module rotation (usually used for precise driving in auto)
     public void rotateModule (Vector2d direction, boolean fieldCentric) {
@@ -330,6 +363,17 @@ public class DriveModule {
             robot.telemetry.addData(moduleSide + " Current orientation: ", getCurrentOrientation().getAngle());
         }
     }
+
+    //does not need to be called at the start of every program
+    //separate OpMode called ResetEncoders calls this method
+    public void resetEncoders () {
+        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        encoderOrientation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        encoderOrientation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
     //TRACKING METHODS
     //used for straight line distance tracking
 
@@ -354,11 +398,8 @@ public class DriveModule {
     //returns module orientation relative to ROBOT (not field) in degrees and NEG_180_TO_180_HEADING type(fix this for new encoder Through bore
     public Angle getCurrentOrientation() {
         //returns module orientation relative to ROBOT (not field) in degrees and NEG_180_TO_180_HEADING type
-            //double rawAngle = (double)(360/8192) * (double)robot.bulkData2.getMotorCurrentPosition(encoderOrientation);
 
-        /*robot.telemetry.addData(moduleSide + "Orientation Encoder", robot.bulkData2.getMotorCurrentPosition(encoderOrientation));
-        double rawAngle = (double)(robot.bulkData2.getMotorCurrentPosition(encoderOrientation)) * DEGREES_PER_TICK_ORIENT *1; //motor2-motor1 makes ccw positive (?)
-        return new Angle(rawAngle, Angle.AngleType.ZERO_TO_360_HEADING);*/
+
             double rawAngleORIENT = (double)(robot.bulkData2.getMotorCurrentPosition(encoderOrientation)) * DEGREES_PER_TICK_ORIENT;
             Angle rawAngleORIENTAngle = new Angle(rawAngleORIENT, Angle.AngleType.ZERO_TO_360_HEADING);
 
@@ -375,17 +416,49 @@ public class DriveModule {
 
         }
 
+    //TRACKING METHODS
+    //used for robot position tracking
 
+    //new position tracking
+    public Vector2d updatePositionTracking (Telemetry telemetry) {
+        double newM1Encoder = robot.bulkData1.getMotorCurrentPosition(motor1);
+        double newM2Encoder = robot.bulkData1.getMotorCurrentPosition(motor2);
+        double newOrientEncoder = robot.bulkData2.getMotorCurrentPosition(encoderOrientation);
 
+        //angles are in radians
+        //Angle startingAngleObj = new Angle((lastM1Encoder + lastM2Encoder)/2.0 * DEGREES_PER_TICK, Angle.AngleType.ZERO_TO_360_HEADING);
+        //Angle finalAngleObj = new Angle((newM1Encoder + newM2Encoder)/2.0 * DEGREES_PER_TICK, Angle.AngleType.ZERO_TO_360_HEADING);
 
-    //does not need to be called at the start of every program
-    //separate Opmode called ResetEncoders calls this method
-    public void resetEncoders () {
-        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Angle startingAngleObj = new Angle(lastorientEncoder* DEGREES_PER_TICK_ORIENT, Angle.AngleType.ZERO_TO_360_HEADING);
+        Angle finalAngleObj = new Angle(newOrientEncoder* DEGREES_PER_TICK_ORIENT, Angle.AngleType.ZERO_TO_360_HEADING);
+
+        double averageAngle = Math.toRadians(Angle.getAverageAngle(startingAngleObj, finalAngleObj).getAngle(Angle.AngleType.ZERO_TO_360_CARTESIAN)); //was 180 heading
+
+        double startingPosition = (lastM1Encoder - lastM2Encoder)/2.0  * CM_PER_TICK;
+        double finalPosition = (newM1Encoder - newM2Encoder)/2.0 * CM_PER_TICK;
+        positionChange = finalPosition - startingPosition;
+        //if (reversed) positionChange *= -1; //todo: test this change (including how it may affect heading tracking)
+
+        Vector2d displacementVec;
+        double deltaYPos = Math.sin(averageAngle) * positionChange; //was x
+        double deltaXPos = Math.cos(averageAngle) * positionChange; //was y
+        displacementVec = new Vector2d(-deltaXPos, -deltaYPos); //added negatives based on testing results
+
+        if (debuggingMode) {
+            telemetry.addData("Position change: ", positionChange);
+            telemetry.addData("Average angle: ", averageAngle);
+            telemetry.addData(moduleSide + " Displacement vector: ", displacementVec);
+            telemetry.addData(moduleSide + " Delta X Pos: ", displacementVec.getX());
+            telemetry.addData(moduleSide + " Delta Y Pos: ", displacementVec.getY()); //was printing the final position instead...
+        }
+
+        lastM1Encoder = newM1Encoder;
+        lastM2Encoder = newM2Encoder;
+
+        return displacementVec;
     }
+
+
     public void resetDistanceTraveled () {
         distanceTraveled = 0;
         lastMotor2Encoder = motor2.getCurrentPosition();

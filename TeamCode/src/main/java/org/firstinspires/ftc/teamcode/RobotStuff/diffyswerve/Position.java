@@ -1,31 +1,48 @@
 package org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve;
 
 public class Position {
-    //absolute position on the field
-    double x;
-    double y;
+    //stores an absolute position on field
+    double x, y;
     Angle heading;
 
-    public Position (double x, double y, Angle heading){
+    public Position (double x, double y, Angle heading) {
         this.x = x;
         this.y = y;
-        this.heading = heading;
-
+        this.heading = heading; //todo: may want to force type
     }
+
     @Override
     public String toString() {
         return "(" + x + ", " + y + ")";
     }
 
+    public void set (double x, double y, Angle heading) {
+        this.x = x;
+        this.y = y;
+        this.heading = heading;
+    }
+
     public void increment (double deltaX, double deltaY, double deltaHeading) {
         this.x += deltaX;
         this.y += deltaY;
+        //todo: make this built into angle class/ check if it will work for all types/cases
         this.heading = new Angle(heading.getAngle() + deltaHeading, heading.getType());
     }
-    public void incrementHeading (double deltaHeading){
-        heading = heading.rotateBy(deltaHeading, Angle.Direction.CLOCKWISE);
 
+    public void incrementX (double deltaX) {
+        this.x += deltaX;
     }
+
+    public void incrementY (double deltaY) {
+        this.y += deltaY;
+    }
+
+    public void incrementHeading (double deltaHeading) {
+        //todo: make this built into angle class/ check if it will work for all types/cases
+        //this.heading = new Angle(heading.getAngle() + deltaHeading, heading.getType());
+        heading = heading.rotateBy(deltaHeading, Angle.Direction.CLOCKWISE);
+    }
+
     public boolean withinRange (Position otherPosition, double xMaxError, double yMaxError, double headingMaxError) {
         double xError = getAbsXDifference(otherPosition);
         double yError = getAbsYDifference(otherPosition);

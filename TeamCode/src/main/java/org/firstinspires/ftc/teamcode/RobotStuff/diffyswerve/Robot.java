@@ -32,6 +32,9 @@ public class Robot {
 
     ExpansionHubEx expansionHub1;
 
+    //data logger
+    DataLogger dataLogger;
+
 
 
     public Robot(OpMode opMode, Position startingPosition, boolean isAuto, boolean debuggingMode) {
@@ -42,8 +45,11 @@ public class Robot {
 
         imu = opMode.hardwareMap.get(BNO055IMU.class, "imu");
 
+        //bulk data
         expansionHub1 = hardwareMap.get(ExpansionHubEx.class, "Control Hub");
         bulkData1 = expansionHub1.getBulkInputData();
+
+        dataLogger = new DataLogger("UltimateGoalRobot");
 
     }
 
@@ -56,6 +62,8 @@ public class Robot {
     public Robot(OpMode opMode, boolean isAuto, boolean debuggingMode) {
         this(opMode, new Position(0, 0, new Angle(0, Angle.AngleType.ZERO_TO_360_HEADING)), isAuto, debuggingMode);
     }
+
+
     public void updateBulkData() {
         bulkData1 = expansionHub1.getBulkInputData();
 
