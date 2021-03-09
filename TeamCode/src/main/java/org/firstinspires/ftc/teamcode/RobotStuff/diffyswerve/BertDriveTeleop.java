@@ -161,6 +161,7 @@ import org.firstinspires.ftc.teamcode.Misc.PID;
         pidDrive.disable();
         super.stop();
     }
+    
     public Vector2d checkDeadband(Vector2d joystick, boolean slowMode) {
         if (joystick.getMagnitude() > (slowMode ? DEADBAND_MAG_SLOW_MODE : DEADBAND_MAG_NORMAL)) {
             imuTarget = robot.getRobotHeading().getAngle();
