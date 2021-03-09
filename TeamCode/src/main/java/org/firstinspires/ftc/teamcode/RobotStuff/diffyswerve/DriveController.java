@@ -14,7 +14,7 @@ import static org.firstinspires.ftc.teamcode.RobotStuff.diffyswerve.DriveModule.
 // covert < to the speed of the motor
 //power input for center wheel( convert to powers for each motor)(both motors need to create a specific power)
 //use encoder to adjust motor speeds
-//yeet1
+//yeet12
 
 enum ModuleSide {LEFT, RIGHT}
 
