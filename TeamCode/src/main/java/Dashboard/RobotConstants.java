@@ -20,11 +20,14 @@ public class RobotConstants {
     public static double Straight_KD = 0;
     public static double Target_Angle = 90;
 
-    public static double MAX_VELOCITY = 27.5;
-    public static double MAX_ACCELERATION = 20;
-    public static double DRIVE_GEAR_RATIO = 1.387755102;
-    public static double STEERING_GEAR_RATIO = 3.4285714286;
+    public static double MOTION_PROFILE_Kp = 0.1;
+    public static double MOTION_PROFILE_Ki = 0;
+    public static double MOTION_PROFILE_Kd = 0;
+    public static double MOTION_PROFILE_KiMAX = 0.5;
 
-    public static double Power = 1;
+
+    public static double FRONT_GRIPPER_GRAB_POS = 0.9;
+    public static double BACK_GRIPPER_GRAB_POS = 0.45;
+
 
 }
