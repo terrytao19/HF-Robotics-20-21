@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import Dashboard.RobotConstants;
 
-public class FoundationGripper {
+/*public class FoundationGripper {
     public Servo gripperF;
     public Servo gripperB;
 
@@ -28,4 +28,6 @@ public class FoundationGripper {
     }
 
 
+
 }
+*/

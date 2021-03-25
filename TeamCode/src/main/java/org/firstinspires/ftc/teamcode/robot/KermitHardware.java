@@ -11,7 +11,7 @@ public class KermitHardware {
     public Drivetrain dt = null;
     public Intake intake = null;
 
-    public FoundationGripper foundationGripper = null;
+  //  public FoundationGripper foundationGripper = null;
 
     public IMU imu;
 
@@ -29,7 +29,7 @@ public class KermitHardware {
         dt = new Drivetrain(hwMap);
         intake = new Intake(hwMap);
 
-        foundationGripper = new FoundationGripper(hwMap);
+      //  foundationGripper = new FoundationGripper(hwMap);
         imu = new IMU(hwMap);
     }
 
@@ -39,7 +39,7 @@ public class KermitHardware {
         dt = new Drivetrain(hwMap);
         intake = new Intake(hwMap);
 
-        foundationGripper = new FoundationGripper(hwMap);
+        //foundationGripper = new FoundationGripper(hwMap);
     }
 
 }

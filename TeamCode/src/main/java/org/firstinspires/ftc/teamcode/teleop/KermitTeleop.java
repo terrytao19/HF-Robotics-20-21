@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 
-@TeleOp(name = "Grover TeleOp")
+@TeleOp(name = "Kermit Teleop")
 public class KermitTeleop extends OpMode {
     //make an instance of the hardware class
     KermitHardware robot = new KermitHardware();
@@ -132,14 +132,12 @@ public class KermitTeleop extends OpMode {
 
         //GAMEPAD 2 CONTROLS
 
-        //Intake controls
-        if(gamepad2.right_trigger > 0.5) robot.intake.on();
-        else if(gamepad2.left_trigger > 0.5) robot.intake.reverse();
-        else robot.intake.off();
+      //  //Intake controls
+       // if(gamepad2.right_trigger > 0.5) robot.intake.on();
+       // else if(gamepad2.left_trigger > 0.5) robot.intake.reverse();
+      //  else robot.intake.off();
 
-        //Foundation gripper controls
-        if(toggleX2.getState(gamepad2.x)) robot.foundationGripper.grab();
-        else robot.foundationGripper.reset();
+
 
 
         //Send data to the driver station
