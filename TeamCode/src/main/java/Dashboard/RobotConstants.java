@@ -26,8 +26,8 @@ public class RobotConstants {
     public static double MOTION_PROFILE_KiMAX = 0.5;
 
 
-    public static double FRONT_GRIPPER_GRAB_POS = 0.9;
-    public static double BACK_GRIPPER_GRAB_POS = 0.45;
+   public static double MAX_ACCELERATION = .9;
+   public static double MAX_VELOCITY = 1;
 
 
 }
