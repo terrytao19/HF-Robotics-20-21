@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-public class Intake {
+/*public class Intake {
     public DcMotor intakeLeft;
     public DcMotor intakeRight;
 
@@ -50,3 +50,4 @@ public class Intake {
         return proxLeft.getDistance(DistanceUnit.CM);
     }
 }
+*/

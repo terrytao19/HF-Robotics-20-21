@@ -78,9 +78,9 @@ public class FieldCentric extends OpMode {
         robot.dt.setMotorPower(FLPower,FRPower,BLPower,BRPower);
 
         //Intake controls
-        if(gamepad1.right_bumper) robot.intake.on();
-        else if(gamepad1.left_bumper) robot.intake.reverse();
-        else robot.intake.off();
+       // if(gamepad1.right_bumper) robot.intake.on();
+       // else if(gamepad1.left_bumper) robot.intake.reverse();
+       // else robot.intake.off();
 
         //Telemetry (shows text on the phone)
         //telemetry.addData("Robot heading: ", robot.getHeading());
