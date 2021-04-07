@@ -164,7 +164,7 @@ public class KermitTeleop extends OpMode {
 
 
 
-        //Send data to the driver station
+        //Send data to the driver station1
         telemetry.addData("Angle: ", robot.imu.getHeading());
         telemetry.update();
 
