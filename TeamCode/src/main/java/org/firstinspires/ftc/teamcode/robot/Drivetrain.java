@@ -48,10 +48,10 @@ public class Drivetrain {
         setMotorPower(0,0,0,0);
 
         //find out which direction each motor should be set to (forward or reverse?)
-        FLMotor.setDirection(DcMotor.Direction.REVERSE);
-        FRMotor.setDirection(DcMotor.Direction.FORWARD);
-        BLMotor.setDirection(DcMotor.Direction.REVERSE);
-        BRMotor.setDirection(DcMotor.Direction.FORWARD);
+        FLMotor.setDirection(DcMotor.Direction.FORWARD);
+        FRMotor.setDirection(DcMotor.Direction.REVERSE);
+        BLMotor.setDirection(DcMotor.Direction.FORWARD);
+        BRMotor.setDirection(DcMotor.Direction.REVERSE);
 
         //The motors will run without encoders on by default
         disableEncoders();

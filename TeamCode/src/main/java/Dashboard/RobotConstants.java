@@ -28,6 +28,7 @@ public class RobotConstants {
 
    public static double MAX_ACCELERATION = .9;
    public static double MAX_VELOCITY = 1;
+   public static double GRIPPER_GRAB_POS= .9;
 
 
 }

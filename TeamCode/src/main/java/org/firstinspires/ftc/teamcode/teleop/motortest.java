@@ -5,15 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 //beyblad
-@Disabled
 @TeleOp
 public class motortest  extends OpMode {
-    DcMotor motorleft;
+    DcMotor FLMotor;
 
 
     public void init() {
 
-        motorleft = hardwareMap.dcMotor.get("motor0");
+        FLMotor = hardwareMap.dcMotor.get("FLMotor");
     }
     public void init_loop(){}
 
@@ -21,7 +20,7 @@ public class motortest  extends OpMode {
 
 
     public void loop() {
-        motorleft.setPower(1);
+        FLMotor.setPower(1);
 
     }
 }
