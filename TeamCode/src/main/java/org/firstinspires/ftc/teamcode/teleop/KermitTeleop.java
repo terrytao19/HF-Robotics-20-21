@@ -157,7 +157,7 @@ public class KermitTeleop extends OpMode {
 
         //shooter controls
 
-        if(gamepad1.right_bumper) robot.shooter.on();
+        if(toggleB.getState(gamepad1.y)) robot.shooter.on();
         else robot.shooter.off();
 
 
