@@ -9,7 +9,7 @@ public class Intake {
 
 
 
-    public static final double INTAKE_POWER = 0.5;
+    public static final double INTAKE_POWER = 1;
     public static final double INTAKE_POWER_SLOW = 0.25;
 
 
@@ -30,7 +30,7 @@ public class Intake {
 
 
     public void reverse() {
-        intake.setPower(-INTAKE_POWER_SLOW);
+        intake.setPower(-INTAKE_POWER);
 
 
     }

@@ -144,8 +144,6 @@ public class KermitTeleop extends OpMode {
 
 
 
-        //GAMEPAD 2 CONTROLS
-
 
         //Intake controls
         if(gamepad1.right_trigger > 0.5) robot.intake.on();
@@ -156,6 +154,12 @@ public class KermitTeleop extends OpMode {
         //Foundation gripper controls
         if(toggleY1.getState(gamepad1.y)) robot.WobbleGripper.grab();
         else robot.WobbleGripper.reset();
+
+        //shooter controls
+
+        if(gamepad1.right_bumper) robot.shooter.on();
+        else robot.shooter.off();
+
 
 
 

@@ -18,6 +18,8 @@ public class KermitHardware {
 
     public IMU imu;
 
+    public Shooter shooter = null;
+
 
 
 
@@ -37,6 +39,7 @@ public class KermitHardware {
 
         dt = new Drivetrain(hwMap);
         intake = new Intake(hwMap);
+        shooter = new Shooter(hwMap);
 
 
         WobbleGripper = new WobbleGripper(hwMap);
