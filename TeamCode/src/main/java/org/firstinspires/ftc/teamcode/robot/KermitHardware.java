@@ -20,6 +20,8 @@ public class KermitHardware {
 
     public Shooter shooter = null;
 
+    public Pusher Pusher = null;
+
 
 
 
@@ -40,6 +42,7 @@ public class KermitHardware {
         dt = new Drivetrain(hwMap);
         intake = new Intake(hwMap);
         shooter = new Shooter(hwMap);
+        Pusher =new Pusher(hwMap);
 
 
         WobbleGripper = new WobbleGripper(hwMap);

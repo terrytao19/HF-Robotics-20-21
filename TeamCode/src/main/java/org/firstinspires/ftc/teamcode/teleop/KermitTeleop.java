@@ -152,8 +152,8 @@ public class KermitTeleop extends OpMode {
 
 
         //Foundation gripper controls
-        if(toggleY1.getState(gamepad1.y)) robot.WobbleGripper.grab();
-        else robot.WobbleGripper.reset();
+        if(toggleY1.getState(gamepad1.y)) robot.Pusher.grab();
+        else robot.Pusher.reset();
 
         //shooter controls
 
