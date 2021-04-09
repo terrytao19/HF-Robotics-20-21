@@ -17,10 +17,10 @@ public class Pusher {
 
         pusher.setPosition(0);
     }
-    public void grab(){
+    public void push(){
         pusher.setPosition(RobotConstants.PUSHER_GRAB_POS);
+        pusher.setPosition(0);
     }
-
 
     public void reset(){
         pusher.setPosition(0);

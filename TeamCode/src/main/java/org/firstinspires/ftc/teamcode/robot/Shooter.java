@@ -9,7 +9,7 @@ public class Shooter {
 
 
 
-    public static final double SHOOTER_POWER = 1;
+    public static final double SHOOTER_POWER = .75;
 
 
     public Shooter(HardwareMap ahwMap) {
